@@ -1,8 +1,8 @@
 # PyConsoleCMDTools
 [![Build Status](https://travis-ci.org/kyan001/PyConsoleCMDTools.svg?branch=master)](https://travis-ci.org/kyan001/PyConsoleCMDTools)
-![PyPI - Downloads](https://img.shields.io/pypi/dm/consolecmdtools.svg)
-![GitHub release](https://img.shields.io/github/release/kyan001/PyConsoleCMDTools.svg)
-[![GitHub license](https://img.shields.io/github/license/kyan001/PyConsoleCMDTools.svg)](https://github.com/kyan001/PyConsoleCMDTools/blob/master/LICENSE)
+![PyPI - Downloads](https://img.shields.io/pypi/dm/consolecmdtools)
+![GitHub release](https://img.shields.io/github/v/release/kyan001/PyConsoleCMDTools)
+![GitHub license](https://img.shields.io/github/license/kyan001/PyConsoleCMDTools)
 
 A console toolkit for common uses
 
