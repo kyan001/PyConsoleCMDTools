@@ -1,19 +1,14 @@
 # -*- coding: utf-8 -*-
 import os
 import sys
-import time
-import getpass
 import urllib.request
 import json
 import io
-from functools import wraps
-import difflib
-from urllib.request import build_opener
 # !! some imports are lazy-loaded
 
 import consoleiotools as cit
 
-__version__ = '1.0.0'
+__version__ = '1.0.1'
 
 
 def banner(text: str) -> str:
@@ -179,6 +174,8 @@ def diff(a, b, meta: bool = False, force_str: bool = False, context: int = 0) ->
     Returns:
         list: Diffs where the dst is not same as src. Only lines with diffs in the result. The first 2 lines are the header of diffs.
     """
+    import difflib
+
     src, dst = {'raw': a}, {'raw': b}
     for d in (src, dst):
         if isinstance(d['raw'], str):

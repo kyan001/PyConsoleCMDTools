@@ -4,11 +4,10 @@
 A console toolkit for common uses
 
 ```python
-# Static Methods
 >>> import consolecmdtools as cct
 
 >>> cct.__version__
-'1.0.0'
+'1.0.1'
 
 >>> print(cct.banner("hello, world!"))  # Generate banner for text
 #######################

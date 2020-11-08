@@ -2,7 +2,6 @@
 import sys
 import os
 import unittest
-import getpass
 from unittest.mock import patch
 
 import FakeOut
@@ -16,7 +15,7 @@ import consolecmdtools as cct  # noqa
 
 class test_consolecmdtools(unittest.TestCase):
     """consolecmdtools unit tests"""
-    cct_version = '1.0.0'
+    cct_version = '1.0.1'
 
     def setUp(self):
         # redirect stdout
