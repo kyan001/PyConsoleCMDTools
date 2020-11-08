@@ -1,14 +1,30 @@
-# PyConsolecmdtools
+# PyConsoleCMDTools
 [![Build Status](https://travis-ci.org/kyan001/PyConsoleCMDTools.svg?branch=master)](https://travis-ci.org/kyan001/PyConsoleCMDTools)
+![PyPI - Downloads](https://img.shields.io/pypi/dm/consolecmdtools.svg)
+![GitHub release](https://img.shields.io/github/release/kyan001/PyConsoleCMDTools.svg)
+[![GitHub license](https://img.shields.io/github/license/kyan001/PyConsoleCMDTools.svg)](https://github.com/kyan001/PyConsoleCMDTools/blob/master/LICENSE)
 
 A console toolkit for common uses
 
+
+## Installation
+
+```sh
+pip install consolecmdtools  # install
+pip install --upgrade consolecmdtools  # update
+```
+
+## Get Started
+
 ```python
 >>> import consolecmdtools as cct
-
->>> cct.__version__
+>>> print(cct.__version__)
 '1.0.1'
+```
 
+## Functions
+
+```python
 >>> print(cct.banner("hello, world!"))  # Generate banner for text
 #######################
 #    hello, world!    #
