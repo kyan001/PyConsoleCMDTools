@@ -60,8 +60,14 @@ hello
 >>> cct.is_cmd_exist("ls")  # Test if a command is exist.
 True
 
->>> cct.get_dir("./file")  # Get the path and basename of the parent folder of the file.
-("/path/to/dir", "dir")  # '/path/to/dir/file' for example
+>>> cct.get_dir("./file")  # Get the parent folder path of the file.
+'/path/to/dir'  # '/path/to/dir/file' for example
+
+>>> cct.get_dir("./file", mode="file")  # Get the file absolute path.
+'/path/to/dir/file'
+
+>>> cct.get_dir("./file", mode="basename")  # Get the parent folder name of the file.
+'dir'
 
 >>> cct.diff("str1", "str2")  # Compare 2 strings, return the list of diffs.
 [  # you can use `"\n".join(diff)` to print the diff.

@@ -15,7 +15,7 @@ import consolecmdtools as cct  # noqa
 
 class test_consolecmdtools(unittest.TestCase):
     """consolecmdtools unit tests"""
-    cct_version = '1.0.1'
+    cct_version = '2.0.1'
 
     def setUp(self):
         # redirect stdout
@@ -63,12 +63,12 @@ class test_consolecmdtools(unittest.TestCase):
     def test_image_to_color_rgb(self):
         img_url = "https://github.com/kyan001/PyConsoleCMDTools/raw/main/tests/image.jpg"
         color = cct.image_to_color(img_url)
-        self.assertEqual(color, (227, 174, 106))
+        self.assertEqual(color, (226, 175, 106))
 
     def test_image_to_color_hex(self):
         img_url = "https://github.com/kyan001/PyConsoleCMDTools/raw/main/tests/image.jpg"
         color = cct.image_to_color(img_url, mode='hex')
-        self.assertEqual(color, '#E3AE6A')
+        self.assertEqual(color, '#E2AF6A')
 
     def test_clear_screen(self):
         cct.clear_screen()
@@ -91,8 +91,19 @@ class test_consolecmdtools(unittest.TestCase):
             self.assertTrue(cct.is_cmd_exist("ls"))
 
     def test_get_dir(self):
-        dir_path, dir_basename = cct.get_dir(__file__)
+        dir_path = cct.get_dir(__file__)
         self.assertTrue(dir_path.endswith("tests"))
+
+    def test_get_dir_dir(self):
+        dir_path = cct.get_dir(__file__, mode="dir")
+        self.assertTrue(dir_path.endswith("tests"))
+
+    def test_get_dir_file(self):
+        file_path = cct.get_dir(__file__, mode="file")
+        self.assertTrue(file_path.endswith(".py"))
+
+    def test_get_dir_basename(self):
+        dir_basename = cct.get_dir(__file__, mode="basename")
         self.assertEqual(dir_basename, "tests")
 
     def test_diff_same(self):

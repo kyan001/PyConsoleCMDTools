@@ -8,7 +8,7 @@ import io
 
 import consoleiotools as cit
 
-__version__ = '1.0.1'
+__version__ = '2.0.1'
 
 
 def banner(text: str) -> str:
@@ -142,23 +142,29 @@ def is_cmd_exist(cmd: str) -> bool:
         return (result != "")
 
 
-def get_dir(filename: str) -> tuple:
+def get_dir(filename: str, mode: str = 'dir') -> str:
     """Get file dir's name and dir's basename.
 
     If file located at /path/to/dir/file, then the dirname is "/path/to/dir", and basename is "dir"
 
     Args:
-        filename: str. Local filename, normally it's __file__
+        filename: str. Local filename, normally it's __file__.
+        mode: str. `file` return the file path, `dir` return the dir path, `basename` return dir basename.
 
     Returns:
-        tuple(
-            str: File dir's path
-            str: File dir's basename
-        )
+        str: file path or dir path or dir basename based on mode.
     """
-    dir_path = os.path.dirname(os.path.abspath(filename))
+    file_path = os.path.abspath(filename)
+    dir_path = os.path.dirname(file_path)
     dir_basename = os.path.basename(dir_path)
-    return dir_path, dir_basename
+    if mode == 'file':
+        return os.path.abspath(filename)
+    elif mode == 'dir':
+        return dir_path
+    elif mode == 'basename':
+        return dir_basename
+    else:
+        return dir_path
 
 
 def diff(a, b, meta: bool = False, force_str: bool = False, context: int = 0) -> list:
@@ -199,7 +205,7 @@ def update_file(filename: str, url: str) -> bool:
 
     Args:
         filename: str. Local filename, normally it's `__file__`
-        url: str. Remote url of raw file content, normally it's https://raw.githubcontents.com/...
+        url: str or urllib.request.Request object. Remote url of raw file content. Use urllib.request.Request object for headers.
     Returns:
         bool: file updated or not
     """
