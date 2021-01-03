@@ -8,7 +8,7 @@ import io
 
 import consoleiotools as cit
 
-__version__ = '2.0.1'
+__version__ = '2.1.1'
 
 
 def banner(text: str) -> str:
@@ -88,7 +88,7 @@ def get_py_cmd() -> str:
     elif sys.platform == "darwin":
         return "python3"
     else:
-        cit.err("No python3 command for " + sys.platform)
+        return sys.executable
 
 
 def run_cmd(cmd: str) -> bool:
@@ -275,3 +275,39 @@ def ajax(url: str, param: dict = {}, method: str = "get"):
         rsp_dict = json.loads(rsp_json)
         return rsp_dict
     return None
+
+
+def is_python3() -> bool:
+    """Check does the script is running in python3"""
+    return sys.version_info[0] == 3
+
+
+def is_admin() -> bool:
+    """Check does the script has admin privileges."""
+    import ctypes
+    try:
+        return ctypes.windll.shell32.IsUserAnAdmin()
+    except AttributeError:  # Windows only
+        return None
+
+
+def runas_admin(py_file: str) -> bool:
+    """Execute a python script with admin privileges.
+
+    Links:
+        Syntax of ShellExecuteW: https://docs.microsoft.com/en-us/windows/win32/api/shellapi/nf-shellapi-shellexecutew
+
+    Args:
+        py_file: string. The command line arguments passed to python. It should be the script path, such as `__file__`.
+    """
+    import ctypes
+    parent_window_handle = None  # no UI
+    operation = "runas"  # run as admin
+    executor = sys.executable  # python.exe
+    parameter = py_file
+    directory = None  # using current working directory.
+    SHOWNORMAL = 1  # SW_SHOWNORMAL
+    if not os.path.isfile(parameter):
+        raise FileNotFoundError(parameter)
+    return_code = ctypes.windll.shell32.ShellExecuteW(parent_window_handle, operation, executor, parameter, directory, SHOWNORMAL)
+    return return_code > 32  # should be greater than 32 if execute success

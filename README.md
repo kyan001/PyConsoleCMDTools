@@ -6,7 +6,6 @@
 
 A console toolkit for common uses
 
-
 ## Installation
 
 ```sh
@@ -118,4 +117,9 @@ False  # if already up-to-date.
 
 >>> cct.ajax('http://ajax-url', method='post')  # AJAX request using post. default is 'get'.
 {'result': 'data'}
+
+>>> if not cct.is_admin():  # Check does the script has admin privileges.
+...     cct.runas_admin(__file__)  # run the script with admin privileges.
+... else:
+...     # your code here
 ```

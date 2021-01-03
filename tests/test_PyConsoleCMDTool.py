@@ -15,7 +15,7 @@ import consolecmdtools as cct  # noqa
 
 class test_consolecmdtools(unittest.TestCase):
     """consolecmdtools unit tests"""
-    cct_version = '2.0.1'
+    cct_version = '2.1.1'
 
     def setUp(self):
         # redirect stdout
@@ -188,6 +188,23 @@ class test_consolecmdtools(unittest.TestCase):
         result = cct.ajax(url, param, "get")
         answer = result.get("answer")
         self.assertEqual(answer, "yes")
+
+    def test_is_python3(self):
+        self.assertEqual(cct.is_python3(), True)
+
+    @unittest.skipUnless(sys.platform.startswith('win'), 'requires Windows')
+    def test_is_admin(self):
+        self.assertEqual(cct.is_admin(), False)
+
+    @unittest.skipUnless(sys.platform.startswith('win'), 'requires Windows')
+    def test_runas_admin(self):
+        script_path = os.path.join(project_dir, "tests", "test_runas.py")
+        self.assertEqual(cct.runas_admin(script_path), True)
+
+    @unittest.skipUnless(sys.platform.startswith('win'), 'requires Windows')
+    def test_runas_admin_error(self):
+        with self.assertRaises(FileNotFoundError):
+            cct.runas_admin("not-exist.file")
 
 
 if __name__ == '__main__':
