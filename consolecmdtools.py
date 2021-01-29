@@ -8,7 +8,7 @@ import io
 
 import consoleiotools as cit
 
-__version__ = '2.1.1'
+__version__ = '3.0.0'
 
 
 def banner(text: str) -> str:
@@ -20,27 +20,57 @@ def banner(text: str) -> str:
     return "\n".join([top_line, middle_line, bottom_line])
 
 
-def md5(text) -> str:
-    """Generate md5 hash for bytes, string, int, etc."""
+def md5(target, force_text=False) -> str:
+    """Generate MD5 hash for bytes, string, int, file, etc."""
     import hashlib
 
-    if not text:
+    if not target:
         return None
-    if type(text) != bytes:  # the input of hashlib.md5() should be type of bytes
-        text = str(text).encode()
-    return hashlib.md5(text).hexdigest()
+    if not force_text and os.path.isfile(target):  # if target is a file
+        with open(target, 'rb') as f:
+            return hashlib.md5(f.read()).hexdigest()
+    if type(target) != bytes:  # the input of hashlib.md5() should be type of bytes
+        target = str(target).encode()
+    return hashlib.md5(target).hexdigest()
 
 
-def image_to_color(url: str, scale: int = 200, mode: str = "rgb") -> tuple:
-    """Get a representative color from the url-pointed image"""
+def crc32(target, force_text=False) -> int:
+    """Generate CRC32 hash for bytes, string, int, file, etc."""
+    import binascii
+
+    if not target:
+        return 0
+    if not force_text and os.path.isfile(target):  # if target is a file
+        with open(target, 'rb') as f:
+            return binascii.crc32(f.read())
+    if type(target) != bytes:  # if target is str/int/float, the input of binascii.crc32() should be type of bytes
+        target = str(target).encode()
+    return binascii.crc32(target)
+
+
+def main_color(source: str, scale: int = 200, triplet: str = "rgb", is_url: bool = False) -> tuple:
+    """Get a representative color from the source-pointed image
+
+    Args:
+        source: str. The URL of the image, or the filepath.
+        scale: int. The size of generated image thumbnail.
+        triplet: str. The return value format. `rgb` for RGB triplet: (255, 255, 255), and `hex` for HEX triplet: '#FFFFFF'.
+        is_url: The source should be downloaded or not.
+
+    Returns:
+        The main color of the source image in RGB or HEX format.
+    """
     from PIL import Image
     import colorsys
 
-    if not url:
+    if not source:
         return None
-    response = urllib.request.urlopen(url)
-    img_buffer = io.BytesIO(response.read())
-    img = Image.open(img_buffer).convert("RGBA")
+    if is_url:
+        response = urllib.request.urlopen(source)
+        img_buffer = io.BytesIO(response.read())
+        img = Image.open(img_buffer).convert("RGBA")
+    else:  # source is an image file
+        img = Image.open(source).convert("RGBA")
     img.thumbnail((scale, scale))
     statistics = {
         "r": 0,
@@ -61,7 +91,7 @@ def image_to_color(url: str, scale: int = 200, mode: str = "rgb") -> tuple:
         int(statistics["g"] / statistics["coef"]),
         int(statistics["b"] / statistics["coef"])
     )
-    if mode.lower() == "hex":
+    if triplet.lower() == "hex":
         return "#%0.2X%0.2X%0.2X" % color
     else:
         return color
@@ -69,7 +99,7 @@ def image_to_color(url: str, scale: int = 200, mode: str = "rgb") -> tuple:
 
 def clear_screen():
     """Clear the console screen"""
-    if sys.platform.startswith('win'):  # Windows
+    if sys.platform.startswith("win"):  # Windows
         os.system("cls")
     elif os.name == "posix":  # Linux and Unix
         os.system("clear")

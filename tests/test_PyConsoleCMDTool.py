@@ -8,6 +8,7 @@ import FakeOut
 import FakeIn
 import FakeOs
 
+test_dir = os.path.dirname(os.path.abspath(__file__))
 project_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, project_dir)
 import consolecmdtools as cct  # noqa
@@ -15,7 +16,7 @@ import consolecmdtools as cct  # noqa
 
 class test_consolecmdtools(unittest.TestCase):
     """consolecmdtools unit tests"""
-    cct_version = '2.1.1'
+    cct_version = '3.0.0'
 
     def setUp(self):
         # redirect stdout
@@ -53,21 +54,63 @@ class test_consolecmdtools(unittest.TestCase):
         self.assertEqual(md5, 'f1feeaa3d698685b6a6179520449e206')
 
     def test_md5_int(self):
-        md5 = cct.md5(123)
-        self.assertEqual(md5, '202cb962ac59075b964b07152d234b70')
+        md5 = cct.md5(42)
+        self.assertEqual(md5, 'a1d0c6e83f027327d8461063f4ac58a6')
 
     def test_md5_bytes(self):
         md5 = cct.md5(b'Test Text')
         self.assertEqual(md5, 'f1feeaa3d698685b6a6179520449e206')
 
-    def test_image_to_color_rgb(self):
-        img_url = "https://github.com/kyan001/PyConsoleCMDTools/raw/main/tests/image.jpg"
-        color = cct.image_to_color(img_url)
+    def test_md5_file(self):
+        filepath = os.path.join(project_dir, "tests", "testfile")
+        md5 = cct.md5(filepath)
+        self.assertEqual(md5, 'd07aa6ddab4d6d2d2891aa9f3625a5db')
+
+    def test_md5_force_text(self):
+        filepath = os.path.join(project_dir, "tests", "testfile")
+        md5 = cct.md5(filepath, force_text=True)
+        self.assertNotEqual(md5, 'd07aa6ddab4d6d2d2891aa9f3625a5db')
+
+    def test_crc32_string(self):
+        crc32 = cct.crc32("Test Text")
+        self.assertEqual(crc32, 1739839371)
+
+    def test_crc32_int(self):
+        crc32 = cct.crc32(42)
+        self.assertEqual(crc32, 841265288)
+
+    def test_crc32_bytes(self):
+        crc32 = cct.crc32(b'Test Text')
+        self.assertEqual(crc32, 1739839371)
+
+    def test_crc32_file(self):
+        filepath = os.path.join(project_dir, "tests", "testfile")
+        crc32 = cct.crc32(filepath)
+        self.assertEqual(crc32, 1030388931)
+
+    def test_crc32_force_text(self):
+        filepath = os.path.join(project_dir, "tests", "testfile")
+        crc32 = cct.crc32(filepath, force_text=True)
+        self.assertNotEqual(crc32, 1030388931)
+
+    def test_main_color_rgb_file(self):
+        img_file = os.path.join(test_dir, "image.jpg")
+        color = cct.main_color(img_file)
         self.assertEqual(color, (226, 175, 106))
 
-    def test_image_to_color_hex(self):
+    def test_main_color_hex_file(self):
+        img_file = os.path.join(test_dir, "image.jpg")
+        color = cct.main_color(img_file, triplet='hex')
+        self.assertEqual(color, '#E2AF6A')
+
+    def test_main_color_rgb_url(self):
         img_url = "https://github.com/kyan001/PyConsoleCMDTools/raw/main/tests/image.jpg"
-        color = cct.image_to_color(img_url, mode='hex')
+        color = cct.main_color(img_url, is_url=True)
+        self.assertEqual(color, (226, 175, 106))
+
+    def test_main_color_hex_url(self):
+        img_url = "https://github.com/kyan001/PyConsoleCMDTools/raw/main/tests/image.jpg"
+        color = cct.main_color(img_url, is_url=True, triplet='hex')
         self.assertEqual(color, '#E2AF6A')
 
     def test_clear_screen(self):

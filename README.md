@@ -17,28 +17,52 @@ pip install --upgrade consolecmdtools  # update
 
 ```python
 >>> import consolecmdtools as cct
->>> print(cct.__version__)
-'1.0.1'
+>>> cct.__version__
+'3.0.0'
 ```
 
 ## Functions
 
 ```python
->>> print(cct.banner("hello, world!"))  # Generate banner for text
+>>> cct.banner("hello, world!")  # Generate banner for text
 #######################
 #    hello, world!    #
 #######################
 
->>> cct.md5("KyanToolKit")  # Return md5 hash for text.
-'a7599cb70a39f9d9d18a76608bf21d4e'
+>>> cct.md5("blah blah blah")  # Return md5 hash for text.
+'55e562bfee2bde4f9e71b8885eb5e303'
 
->>> cct.image_to_color('http://image-url/image')  # Get theme color of image.
+>>> cct.md5(42)  # Return md5 hash for number.
+'a1d0c6e83f027327d8461063f4ac58a6'
+
+>>> cct.md5('file.txt')  # Return md5 hash for file.
+'d07aa6ddab4d6d2d2891aa9f3625a5db'
+
+>>> cct.md5('file.txt', force_text=True)  # Force to return the md5 has for text, even the file exists.
+'3d8e577bddb17db339eae0b3d9bcf180'
+
+>>> cct.crc32("blah blah blah")  # Return crc32 hash for text.
+753353432
+
+>>> cct.crc32(42)  # Return crc32 hash for number.
+841265288
+
+>>> cct.crc32('file.txt')  # Return crc32 hash for file.
+1030388931
+
+>>> cct.crc32('file.txt', force_text=True)  # Force to return the md5 has for text, even the file exists.
+3774289445
+
+>>> cct.main_color('image.jpg')  # Get theme color of image.
 (152, 156, 69)  # RGB value
 
->>> cct.image_to_color('http://image-url/image', scale=500)  # Cost more time to generate a preciser color. default scale is 200.
+>>> cct.main_color('http://image-url/image', is_url=True)  # Get theme color of web image.
+(152, 156, 69)  # RGB value
+
+>>> cct.main_color('image.jpg', scale=500)  # Cost more time to generate a preciser color. default scale is 200.
 (152, 156, 69)
 
->>> cct.image_to_color('http://image-url/image', mode='hex')  # Return color in hex. default mode is 'rgb'.
+>>> cct.main_color('image.jpg', triplet='hex')  # Return color in hex triplet format. default mode is 'rgb'.
 '#989C45'
 
 >>> cct.clear_screen()  # Clear the console.
@@ -123,3 +147,8 @@ False  # if already up-to-date.
 ... else:
 ...     # your code here
 ```
+
+## Updates
+* 2021-01-29 v3.0.0:
+    * Deprecated `image_to_color()`, add `main_color()`.
+        * use `main_color(..., is_url=True)` instead of `image_to_color(...)`
