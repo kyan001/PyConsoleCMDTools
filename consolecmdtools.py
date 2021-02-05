@@ -8,7 +8,7 @@ import io
 
 import consoleiotools as cit
 
-__version__ = '3.0.0'
+__version__ = '3.1.0'
 
 
 def banner(text: str) -> str:
@@ -291,18 +291,21 @@ def ajax(url: str, param: dict = {}, method: str = "get"):
     Returns:
         dict: The responsed json decoded into a dict.
     """
-    param = urllib.parse.urlencode(param)
     if method.lower() == "get":
+        param = urllib.parse.urlencode(param)
         req = urllib.request.Request(url + "?" + param)
     elif method.lower() == "post":
-        param = param.encode("utf-8")
+        param = json.dumps(param).encode("utf-8")
         req = urllib.request.Request(url, data=param)
     else:
         raise Exception("invalid method '{}' (GET/POST)".format(method))
     rsp = urllib.request.urlopen(req)
     if rsp:
-        rsp_json = rsp.read().decode("utf-8")
-        rsp_dict = json.loads(rsp_json)
+        rsp_str = rsp.read().decode("utf-8")
+        try:
+            rsp_dict = json.loads(rsp_str)
+        except json.decoder.JSONDecodeError as e:
+            return rsp_str
         return rsp_dict
     return None
 

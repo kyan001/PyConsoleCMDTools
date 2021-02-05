@@ -16,7 +16,7 @@ import consolecmdtools as cct  # noqa
 
 class test_consolecmdtools(unittest.TestCase):
     """consolecmdtools unit tests"""
-    cct_version = '3.0.0'
+    cct_version = '3.1.0'
 
     def setUp(self):
         # redirect stdout
