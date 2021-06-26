@@ -92,6 +92,15 @@ True
 >>> cct.get_dir("./file", mode="basename")  # Get the parent folder name of the file.
 'dir'
 
+>>> cct.select_path()  # Show file dialog to get file path. Additional args pass to tkinter.filedialog.askopenfilename()
+'/path/to/dir/file'
+
+>>> cct.select_path(multiple=True)  # Show file dialog to get multiple file paths.
+['/path/1', '/path/2']
+
+>>> cct.select_path(folder=True)  # Show file dialog to get folder path.
+'/path/to/dir'
+
 >>> cct.diff("str1", "str2")  # Compare 2 strings, return the list of diffs.
 [  # you can use `"\n".join(diff)` to print the diff.
     "-str1",

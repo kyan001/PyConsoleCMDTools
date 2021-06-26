@@ -8,7 +8,7 @@ import io
 
 import consoleiotools as cit
 
-__version__ = '3.2.0'
+__version__ = '3.2.1'
 
 
 def banner(text: str) -> str:
@@ -197,6 +197,33 @@ def get_dir(filename: str, mode: str = 'dir') -> str:
         return dir_path
 
 
+def select_path(multiple: bool = False, folder: bool = False, *args, **kwargs):
+    """Open a file dialog to get file or folder path.
+
+    Args:
+        multiple: bool. The file dialog select multiple files, and return list.
+        folder: bool. The file dialog select folder not file.
+        *: Any additional args will considered as filedialog args.
+
+    Returns:
+        str: The path of selected file or folder.
+        list: The path list of selected files.
+    """
+    import tkinter
+    import tkinter.filedialog
+    tkapp = tkinter.Tk()
+    tkapp.withdraw()
+    tkapp.update()
+    if folder:
+        path = tkinter.filedialog.askdirectory(*args, **kwargs)
+    elif multiple:
+        path = tkinter.filedialog.askopenfilenames(*args, **kwargs)
+    else:
+        path = tkinter.filedialog.askopenfilename(*args, **kwargs)
+    tkapp.destroy()
+    return path
+
+
 def diff(a, b, meta: bool = False, force_str: bool = False, context: int = 0) -> list:
     """Compare two strings, lists or files and return their differences as list.
 
@@ -344,30 +371,3 @@ def runas_admin(py_file: str) -> bool:
         raise FileNotFoundError(parameter)
     return_code = ctypes.windll.shell32.ShellExecuteW(parent_window_handle, operation, executor, parameter, directory, SHOWNORMAL)
     return return_code > 32  # should be greater than 32 if execute success
-
-
-def select_path(multiple: bool = False, folder: bool = False, *args, **kwargs):
-    """Open a file dialog to get file or folder path.
-
-    Args:
-        multiple: bool. The file dialog select multiple files, and return list.
-        folder: bool. The file dialog select folder not file.
-        *: Any additional args will considered as filedialog args.
-
-    Returns:
-        str: The path of selected file or folder.
-        list: The path list of selected files.
-    """
-    import tkinter
-    import tkinter.filedialog
-    tkapp = tkinter.Tk()
-    tkapp.withdraw()
-    tkapp.update()
-    if multiple:
-        path = tkinter.filedialog.askopenfilenames(*args, **kwargs)
-    elif folder:
-        path = tkinter.filedialog.askdirectory(*args, **kwargs)
-    else:
-        path = tkinter.filedialog.askopenfilename(*args, **kwargs)
-    tkapp.destroy()
-    return path
