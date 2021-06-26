@@ -16,7 +16,7 @@ import consolecmdtools as cct  # noqa
 
 class test_consolecmdtools(unittest.TestCase):
     """consolecmdtools unit tests"""
-    cct_version = '3.1.0'
+    cct_version = '3.2.0'
 
     def setUp(self):
         # redirect stdout
@@ -126,7 +126,7 @@ class test_consolecmdtools(unittest.TestCase):
         self.assertEqual(self.fakeos.readline(), "Test Command")
 
     def test_read_cmd(self):
-        self.assertEqual(cct.read_cmd("echo Test Text"), "Test Text\n")
+        self.assertEqual(cct.read_cmd("echo 'Test Text'"), "Test Text\n")
 
     def test_is_cmd_exist(self):
         with patch("os.system", new=self.os_system):
@@ -248,6 +248,10 @@ class test_consolecmdtools(unittest.TestCase):
     def test_runas_admin_error(self):
         with self.assertRaises(FileNotFoundError):
             cct.runas_admin("not-exist.file")
+
+    @unittest.skipUnless(sys.platform.startswith('win'), 'requires Windows')
+    def test_select_path(self):
+        self.assertEqual(os.path.dirname(cct.select_path(initialdir=test_dir)).replace("/", "\\"), test_dir)
 
 
 if __name__ == '__main__':
