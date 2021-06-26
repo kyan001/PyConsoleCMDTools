@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "consolecmdtools"
+version = "3.2.1"
+description = "Some console tools for console command uses"
+authors = ["Kyan <kai@kyan001.com>"]
+license = "MIT"
+
+[tool.poetry.dependencies]
+python = ">=3.6"
+Pillow = "*"
+consoleiotools = "*"
+
+[tool.poetry.dev-dependencies]
+pycodestyle = "*"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
