@@ -16,7 +16,6 @@ import consolecmdtools as cct  # noqa
 
 class test_consolecmdtools(unittest.TestCase):
     """consolecmdtools unit tests"""
-    cct_version = '3.2.0'
 
     def setUp(self):
         # redirect stdout
@@ -43,7 +42,7 @@ class test_consolecmdtools(unittest.TestCase):
         os.system = self.os_system
 
     def test_version(self):
-        self.assertEqual(self.cct_version, cct.__version__)
+        self.assertTrue(isinstance(cct.__version__, str))
 
     def test_banner(self):
         expect_word = '################\n#  Test Text   #\n################'
