@@ -1,6 +1,9 @@
-from setuptools import setup, find_packages
+import setuptools
 
-setup(
+with open("README.md") as f:
+    long_desc = f.read()
+
+setuptools.setup(
     name='consolecmdtools',
 
     # Versions should comply with PEP440.  For a discussion on single-sourcing
@@ -9,7 +12,8 @@ setup(
     # version=,  # check setup.cfg
 
     description='Some console tools for console command uses',
-    long_description='Some console tools for console command uses',
+    long_description=long_desc,
+    long_description_content_type='text/markdown',
 
     # The project's main homepage.
     url='https://github.com/kyan001/PyConsoleCMDTools',
