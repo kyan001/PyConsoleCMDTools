@@ -8,7 +8,7 @@ import io
 
 import consoleiotools as cit
 
-__version__ = '3.2.1'
+__version__ = '3.2.2'
 
 
 def banner(text: str) -> str:
@@ -51,6 +51,10 @@ def crc32(target, force_text=False) -> int:
 def main_color(source: str, scale: int = 200, triplet: str = "rgb", is_url: bool = False) -> tuple:
     """Get a representative color from the source-pointed image
 
+    Imports:
+        colorsys: shipped with python.
+        PIL: use `pip install pillow` or install by package manager (apt, apk, etc).
+
     Args:
         source: str. The URL of the image, or the filepath.
         scale: int. The size of generated image thumbnail.
@@ -60,8 +64,11 @@ def main_color(source: str, scale: int = 200, triplet: str = "rgb", is_url: bool
     Returns:
         The main color of the source image in RGB or HEX format.
     """
-    from PIL import Image
     import colorsys
+    try:
+        from PIL import Image
+    except ModuleNotFoundError as e:
+        raise ModuleNotFoundError("Install pillow (`pip install pillow`) to use PIL.") from e
 
     if not source:
         return None
