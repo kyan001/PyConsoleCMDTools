@@ -248,7 +248,7 @@ class test_consolecmdtools(unittest.TestCase):
         with self.assertRaises(FileNotFoundError):
             cct.runas_admin("not-exist.file")
 
-    @unittest.skipUnless(sys.platform.startswith('win'), 'requires Windows')
+    @unittest.skip('GUI Test skipped.')
     def test_select_path(self):
         self.assertEqual(os.path.dirname(cct.select_path(initialdir=test_dir)).replace("/", "\\"), test_dir)
 
