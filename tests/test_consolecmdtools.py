@@ -125,7 +125,8 @@ class test_consolecmdtools(unittest.TestCase):
         self.assertEqual(self.fakeos.readline(), "Test Command")
 
     def test_read_cmd(self):
-        self.assertEqual(cct.read_cmd("echo 'Test Text'"), "Test Text\n")
+        cmd = "printf" if sys.platform.startswith('win') else "echo"
+        self.assertEqual(cct.read_cmd("{} 'Test Text'".format(cmd)).strip(), "Test Text")
 
     def test_is_cmd_exist(self):
         with patch("os.system", new=self.os_system):
