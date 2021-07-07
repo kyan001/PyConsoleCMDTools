@@ -125,7 +125,8 @@ class test_consolecmdtools(unittest.TestCase):
         self.assertEqual(self.fakeos.readline(), "Test Command")
 
     def test_read_cmd(self):
-        self.assertEqual(cct.read_cmd("echo 'Test Text'"), "Test Text\n")
+        cmd = "printf" if sys.platform.startswith('win') else "echo"
+        self.assertEqual(cct.read_cmd("{} 'Test Text'".format(cmd)).strip(), "Test Text")
 
     def test_is_cmd_exist(self):
         with patch("os.system", new=self.os_system):
@@ -248,7 +249,7 @@ class test_consolecmdtools(unittest.TestCase):
         with self.assertRaises(FileNotFoundError):
             cct.runas_admin("not-exist.file")
 
-    @unittest.skipUnless(sys.platform.startswith('win'), 'requires Windows')
+    @unittest.skip('GUI Test skipped.')
     def test_select_path(self):
         self.assertEqual(os.path.dirname(cct.select_path(initialdir=test_dir)).replace("/", "\\"), test_dir)
 
