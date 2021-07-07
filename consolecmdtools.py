@@ -302,17 +302,20 @@ def update_file(filename: str, url: str) -> bool:
         return False
 
 
-def read_file(filepath: str) -> str:
+def read_file(filepath, *args, **kwargs) -> str:
     """Try different encoding to open a file in readonly mode."""
-    for mode in ("utf-8", "gbk", "cp1252", "windows-1252", "latin-1"):
+    for mode in ("utf-8", "gbk", "cp1252", "windows-1252", "latin-1", "ascii"):
         try:
-            with open(filepath, mode="r", encoding=mode) as f:
+            with open(filepath, *args, encoding=mode, **kwargs) as f:
                 content = f.read()
-                cit.info("以 {} 格式打开文件".format(mode))
+                cit.info("File is read in {} mode.".format(mode))
                 return content
         except UnicodeDecodeError:
-            cit.warn("打开文件：尝试 {} 格式失败".format(mode))
-    return None
+            cit.warn("File cannot be opened in {} mode".format(mode))
+    with open(filepath, *args, encoding='ascii', errors='surrogateescape', **kwargs) as f:
+        content = f.read()
+        cit.info("File is read in ASCII surrogate escape mode.")
+        return content
 
 
 def read_url(source) -> bytes:
@@ -325,9 +328,7 @@ def read_url(source) -> bytes:
         bytes: The content of the request's response.
     """
     response = urllib.request.urlopen(source)
-    if response:
-        return response.read()
-    return None
+    return response.read() if response else None
 
 
 def ajax(url: str, param: dict = {}, method: str = "get"):
