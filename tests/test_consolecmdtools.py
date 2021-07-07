@@ -63,12 +63,12 @@ class test_consolecmdtools(unittest.TestCase):
     def test_md5_file(self):
         filepath = os.path.join(project_dir, "tests", "testfile")
         md5 = cct.md5(filepath)
-        self.assertEqual(md5, 'd07aa6ddab4d6d2d2891aa9f3625a5db')
+        self.assertEqual(md5, '02e6b5a02826a57a066bb658cca94c50')
 
     def test_md5_force_text(self):
         filepath = os.path.join(project_dir, "tests", "testfile")
         md5 = cct.md5(filepath, force_text=True)
-        self.assertNotEqual(md5, 'd07aa6ddab4d6d2d2891aa9f3625a5db')
+        self.assertNotEqual(md5, '02e6b5a02826a57a066bb658cca94c50')
 
     def test_crc32_string(self):
         crc32 = cct.crc32("Test Text")
@@ -85,12 +85,12 @@ class test_consolecmdtools(unittest.TestCase):
     def test_crc32_file(self):
         filepath = os.path.join(project_dir, "tests", "testfile")
         crc32 = cct.crc32(filepath)
-        self.assertEqual(crc32, 1030388931)
+        self.assertEqual(crc32, 602403306)
 
     def test_crc32_force_text(self):
         filepath = os.path.join(project_dir, "tests", "testfile")
         crc32 = cct.crc32(filepath, force_text=True)
-        self.assertNotEqual(crc32, 1030388931)
+        self.assertNotEqual(crc32, 602403306)
 
     def test_main_color_rgb_file(self):
         img_file = os.path.join(test_dir, "image.jpg")

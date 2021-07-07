@@ -28,7 +28,8 @@ def md5(target, force_text=False) -> str:
         return None
     if not force_text and os.path.isfile(target):  # if target is a file
         with open(target, 'rb') as f:
-            return hashlib.md5(f.read()).hexdigest()
+            content = f.read().replace(os.linesep.encode(), b"\n")  # universal newline
+            return hashlib.md5(content).hexdigest()
     if type(target) != bytes:  # the input of hashlib.md5() should be type of bytes
         target = str(target).encode()
     return hashlib.md5(target).hexdigest()
@@ -42,7 +43,8 @@ def crc32(target, force_text=False) -> int:
         return 0
     if not force_text and os.path.isfile(target):  # if target is a file
         with open(target, 'rb') as f:
-            return binascii.crc32(f.read())
+            content = f.read().replace(os.linesep.encode(), b"\n")  # universal newline
+            return binascii.crc32(content)
     if type(target) != bytes:  # if target is str/int/float, the input of binascii.crc32() should be type of bytes
         target = str(target).encode()
     return binascii.crc32(target)
