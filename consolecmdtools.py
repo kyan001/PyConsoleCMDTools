@@ -342,8 +342,10 @@ def ajax(url: str, param: dict = {}, method: str = "get"):
         dict: The responsed json decoded into a dict.
     """
     if method.lower() == "get":
-        param = urllib.parse.urlencode(param)
-        req = urllib.request.Request(url + "?" + param)
+        if param:
+            param = urllib.parse.urlencode(param)
+            url += "?" + param
+        req = urllib.request.Request(url)
     elif method.lower() == "post":
         param = json.dumps(param).encode("utf-8")
         req = urllib.request.Request(url, data=param)
