@@ -73,8 +73,7 @@ def main_color(source: str, scale: int = 200, triplet: str = "rgb", is_url: bool
     if not source:
         return None
     if is_url:
-        response = urllib.request.urlopen(source)
-        img_buffer = io.BytesIO(response.read())
+        img_buffer = io.BytesIO(read_url(source))
         img = Image.open(img_buffer).convert("RGBA")
     else:  # source is an image file
         img = Image.open(source).convert("RGBA")
@@ -279,8 +278,7 @@ def update_file(filename: str, url: str) -> bool:
     if not url or not filename:
         return False
     try:
-        req = urllib.request.urlopen(url)
-        raw_codes = req.read()
+        raw_codes = read_url(url)
         with open(filename, "rb") as f:
             current_codes = f.read().replace(b"\r", b"")
         is_same, diff = compare(current_codes, raw_codes)
@@ -315,6 +313,21 @@ def read_file(filepath: str) -> str:
     return None
 
 
+def read_url(source) -> bytes:
+    """Try to get file content from the url
+
+    Args:
+        source: str or Request. The target url.
+
+    Returns:
+        bytes: The content of the request's response.
+    """
+    response = urllib.request.urlopen(source)
+    if response:
+        return response.read()
+    return None
+
+
 def ajax(url: str, param: dict = {}, method: str = "get"):
     """Get response using AJAX.
 
@@ -333,14 +346,13 @@ def ajax(url: str, param: dict = {}, method: str = "get"):
         req = urllib.request.Request(url, data=param)
     else:
         raise Exception("invalid method '{}' (GET/POST)".format(method))
-    rsp = urllib.request.urlopen(req)
-    if rsp:
-        rsp_str = rsp.read().decode("utf-8")
+    rsp_bytes = read_url(req)
+    if rsp_bytes:
+        rsp_str = rsp_bytes.decode("utf-8")
         try:
-            rsp_dict = json.loads(rsp_str)
+            return json.loads(rsp_str)
         except json.decoder.JSONDecodeError as e:
             return rsp_str
-        return rsp_dict
     return None
 
 
