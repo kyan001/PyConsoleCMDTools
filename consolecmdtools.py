@@ -8,7 +8,7 @@ import io
 
 import consoleiotools as cit
 
-__version__ = '3.2.2'
+__version__ = '3.2.5'
 
 
 def banner(text: str) -> str:
