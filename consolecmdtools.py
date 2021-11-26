@@ -8,7 +8,7 @@ import io
 
 import consoleiotools as cit
 
-__version__ = '3.2.5'
+__version__ = '3.3.0'
 
 
 def banner(text: str) -> str:
@@ -230,6 +230,22 @@ def select_path(multiple: bool = False, folder: bool = False, *args, **kwargs):
         path = tkinter.filedialog.askopenfilename(*args, **kwargs)
     tkapp.destroy()
     return path
+
+
+def show_in_folder(path: str, ask: bool = False):
+    """Show file in Explorer/Finder/Folder"""
+    import subprocess
+    import platform
+    if ask:
+        cit.ask("Show in folder?")
+        if cit.get_choice(('Yes', 'No')) == 'No':
+            return False
+    if sys.platform.startswith("win"):
+        os.startfile(path)
+    elif platform.system() == "Darwin":
+        subprocess.Popen(["open", path])
+    else:
+        subprocess.Popen(["xdg-open", path])
 
 
 def diff(a, b, meta: bool = False, force_str: bool = False, context: int = 0) -> list:

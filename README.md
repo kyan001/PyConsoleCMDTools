@@ -101,6 +101,10 @@ True
 >>> cct.select_path(folder=True)  # Show file dialog to get folder path.
 '/path/to/dir'
 
+>>> cct.show_in_folder("/path/to/file")  # Show file in Explorer/Finder/Folder.
+
+>>> cct.show_in_folder("/path/to/file", ask=True)  # Ask before show.
+
 >>> cct.diff("str1", "str2")  # Compare 2 strings, return the list of diffs.
 [  # you can use `"\n".join(diff)` to print the diff.
     "-str1",
