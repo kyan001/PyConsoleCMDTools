@@ -8,7 +8,7 @@ import io
 
 import consoleiotools as cit
 
-__version__ = '3.3.0'
+__version__ = '3.4.1'
 
 
 def banner(text: str) -> str:
@@ -138,7 +138,7 @@ def run_cmd(cmd: str) -> bool:
         bool: Does this command run successfully
     """
     SUCCESS_CODE = 0
-    cit.echo(cmd, "command")
+    cit.echo(cmd, pre="command")
     is_success = (os.system(cmd) == SUCCESS_CODE)
     if not is_success:
         cit.warn("Command Failed")
@@ -155,7 +155,7 @@ def read_cmd(cmd: str) -> str:
     import shlex
     import subprocess
 
-    cit.echo(cmd, "command")
+    cit.echo(cmd, pre="command")
     args = shlex.split(cmd)
     proc = subprocess.Popen(args, stdout=subprocess.PIPE)
     (proc_stdout, proc_stderr) = proc.communicate(input=None)  # proc_stdin

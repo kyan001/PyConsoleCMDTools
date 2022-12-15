@@ -228,7 +228,7 @@ class test_consolecmdtools(unittest.TestCase):
     def test_ajax_get(self):
         url = "https://yesno.wtf/api"
         param = {"force": "yes"}
-        result = cct.ajax(url, param, "get")
+        result = cct.ajax(url=url, param=param, method="get")
         answer = result.get("answer")
         self.assertEqual(answer, "yes")
 
