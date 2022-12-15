@@ -1,24 +1,21 @@
 # PyConsoleCMDTools
-[![Build Status](https://travis-ci.org/kyan001/PyConsoleCMDTools.svg?branch=main)](https://travis-ci.org/kyan001/PyConsoleCMDTools)
 ![PyPI - Downloads](https://img.shields.io/pypi/dm/consolecmdtools)
 ![GitHub release](https://img.shields.io/github/v/release/kyan001/PyConsoleCMDTools)
-![GitHub license](https://img.shields.io/github/license/kyan001/PyConsoleCMDTools)
-
-A console toolkit for common uses
+[![GitHub license](https://img.shields.io/github/license/kyan001/PyConsoleCMDTools.svg)](https://github.com/kyan001/PyConsoleCMDTools/blob/master/LICENSE)
 
 ## Installation
 
 ```sh
 pip install consolecmdtools  # install
 pip install --upgrade consolecmdtools  # update
+python -m consolecmdtools  # examples
 ```
 
 ## Get Started
 
 ```python
->>> import consolecmdtools as cct
->>> cct.__version__
-'3.0.0'
+import consolecmdtools as cct
+print(cct.__version__)
 ```
 
 ## Functions
