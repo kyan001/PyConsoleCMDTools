@@ -8,7 +8,7 @@ import io
 
 import consoleiotools as cit
 
-__version__ = '3.4.1'
+__version__ = '3.5.0'
 
 
 def banner(text: str) -> str:
@@ -61,7 +61,7 @@ def main_color(source: str, scale: int = 200, triplet: str = "rgb", is_url: bool
         source: str. The URL of the image, or the filepath.
         scale: int. The size of generated image thumbnail.
         triplet: str. The return value format. `rgb` for RGB triplet: (255, 255, 255), and `hex` for HEX triplet: '#FFFFFF'.
-        is_url: The source should be downloaded or not.
+        is_url: bool. The source should be downloaded or not.
 
     Returns:
         The main color of the source image in RGB or HEX format.
@@ -347,11 +347,48 @@ def read_url(source) -> bytes:
     return response.read() if response else None
 
 
+def move_file(src: str, dst: str, copy: bool = False, backup: bool = False, msgout: callable = None):
+    """Move or copy file from one place to another.
+
+    Args:
+        src: str. Source file path.
+        dst: str. Destination file path.
+        copy: bool. Copy or move source file to destination.
+        backup: bool. Backup destination file or not. `True` means try to backup destination file, pass if destination file does not exist.
+        msgout: function. Output function to handle the outputs. `None` means no outputs.
+    """
+    import time
+    import shutil
+
+    def _msg(message):
+        if msgout:
+            msgout(message)
+    _msg(f"From{' (+Copy)' if copy else ''}: {src}")
+    _msg(f"To{' (+Backup)' if backup else ''}: {dst}")
+    if not os.path.exists(src):
+        raise FileNotFoundError(f"Source file {src} does not exist.")
+    if os.path.exists(dst):
+        if backup:
+            dst_backup = f"{dst}.backup.{time.strftime('%Y%m%d%H%M%S')}"
+            shutil.copy2(dst, dst_backup)
+            _msg(f"Destination file {dst} backuped up to {dst_backup}.")
+        else:
+            _msg(f"Warning: Destination file {dst} already exists and will be overwritten.")
+    else:
+        if backup:
+            _msg(f"Warning: Destination file {dst} does not exist, backup skipped.")
+    if copy:
+        shutil.copy2(src, dst)
+    else:
+        shutil.move(src, dst)
+    _msg(f"File {src} {'copied' if copy else 'moved'} to {dst}.")
+
+
 def ajax(url: str, param: dict = {}, method: str = "get"):
     """Get response using AJAX.
 
     Args:
-        url: string. The requesting url.
+        url: str. The requesting url.
         param: dict. The parameters in the request payload.
         method: str. The method of request, "get" or "post".
     Returns:

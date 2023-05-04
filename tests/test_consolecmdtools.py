@@ -2,6 +2,7 @@
 import sys
 import os
 import unittest
+import tempfile
 from unittest.mock import patch
 
 import FakeOut
@@ -103,12 +104,12 @@ class test_consolecmdtools(unittest.TestCase):
         self.assertEqual(color, '#E2AF6A')
 
     def test_main_color_rgb_url(self):
-        img_url = "https://github.com/kyan001/PyConsoleCMDTools/raw/main/tests/image.jpg"
+        img_url = "https://raw.githubusercontent.com/kyan001/PyConsoleCMDTools/main/tests/image.jpg"
         color = cct.main_color(img_url, is_url=True)
         self.assertEqual(color, (226, 175, 106))
 
     def test_main_color_hex_url(self):
-        img_url = "https://github.com/kyan001/PyConsoleCMDTools/raw/main/tests/image.jpg"
+        img_url = "https://raw.githubusercontent.com/kyan001/PyConsoleCMDTools/main/tests/image.jpg"
         color = cct.main_color(img_url, is_url=True, triplet='hex')
         self.assertEqual(color, '#E2AF6A')
 
@@ -213,7 +214,7 @@ class test_consolecmdtools(unittest.TestCase):
         self.assertTrue("-{}".format(a) in cct.diff(a, b, force_str=True))
 
     def test_update_file(self):
-        url = "https://github.com/kyan001/PyConsoleCMDTools/raw/main/tests/testfile"
+        url = "https://raw.githubusercontent.com/kyan001/PyConsoleCMDTools/main/tests/testfile"
         filepath = os.path.join(project_dir, "tests", "testfile")
         result = cct.update_file(filepath, url)
         expect = "testfile is already up-to-date."
@@ -224,6 +225,66 @@ class test_consolecmdtools(unittest.TestCase):
         filepath = os.path.join(project_dir, "tests", "testfile")
         content = cct.read_file(filepath)
         self.assertEqual(content, "This file should not changed\n")
+
+    def test_move_file_move(self):
+        with tempfile.TemporaryDirectory() as tmpd:
+            with tempfile.NamedTemporaryFile(dir=tmpd, delete=False) as fsrc, tempfile.NamedTemporaryFile(dir=tmpd) as fdst:  # dst is deleted after creation
+                src = fsrc.name
+                dst = fdst.name
+            self.assertTrue(os.path.exists(src))
+            self.assertFalse(os.path.exists(dst))
+            cct.move_file(src, dst)
+            self.assertFalse(os.path.exists(src))
+            self.assertTrue(os.path.exists(dst))
+
+    def test_move_file_copy(self):
+        with tempfile.TemporaryDirectory() as tmpd:
+            with tempfile.NamedTemporaryFile(dir=tmpd, delete=False) as fsrc, tempfile.NamedTemporaryFile(dir=tmpd) as fdst:  # dst is deleted after creation
+                src = fsrc.name
+                dst = fdst.name
+            self.assertTrue(os.path.exists(src))
+            self.assertFalse(os.path.exists(dst))
+            cct.move_file(src, dst, copy=True)
+            self.assertTrue(os.path.exists(src))
+            self.assertTrue(os.path.exists(dst))
+
+    def test_move_file_overwrite(self):
+        with tempfile.TemporaryDirectory() as tmpd:
+            with tempfile.NamedTemporaryFile(dir=tmpd, delete=False) as fsrc, tempfile.NamedTemporaryFile(dir=tmpd, delete=False) as fdst:
+                src = fsrc.name
+                dst = fdst.name
+            self.assertTrue(os.path.exists(src))
+            self.assertTrue(os.path.exists(dst))
+            cct.move_file(src, dst, copy=True)
+            self.assertTrue(os.path.exists(src))
+            self.assertTrue(os.path.exists(dst))
+            cct.move_file(src, dst, copy=False)
+            self.assertFalse(os.path.exists(src))
+            self.assertTrue(os.path.exists(dst))
+
+    def test_move_file_backup(self):
+        with tempfile.TemporaryDirectory() as tmpd:
+            with tempfile.NamedTemporaryFile(dir=tmpd, delete=False) as fsrc, tempfile.NamedTemporaryFile(dir=tmpd, delete=False) as fdst:
+                src = fsrc.name
+                dst = fdst.name
+            self.assertTrue(os.path.exists(src))
+            self.assertTrue(os.path.exists(dst))
+            cct.move_file(src, dst, backup=True)
+            self.assertFalse(os.path.exists(src))
+            self.assertTrue(os.path.exists(dst))
+
+    def test_move_file_msgout(self):
+        with tempfile.TemporaryDirectory() as tmpd:
+            with tempfile.NamedTemporaryFile(dir=tmpd, delete=False) as fsrc, tempfile.NamedTemporaryFile(dir=tmpd, delete=False) as fdst:
+                src = fsrc.name
+                dst = fdst.name
+            self.assertTrue(os.path.exists(src))
+            self.assertTrue(os.path.exists(dst))
+            cct.move_file(src, dst, msgout=print)
+            self.assertFalse(os.path.exists(src))
+            self.assertTrue(os.path.exists(dst))
+            self.assertTrue(src in self.fakeout.readline())
+            self.assertTrue(dst in self.fakeout.readline())
 
     def test_ajax_get(self):
         url = "https://yesno.wtf/api"
@@ -255,4 +316,16 @@ class test_consolecmdtools(unittest.TestCase):
 
 
 if __name__ == '__main__':
-    unittest.main(verbosity=2, exit=False)  # print more info, no sys.exit() called.
+    # SUITE_MODE = True  # Comment this line to run all tests
+    if "SUITE_MODE" in locals():
+        suite = unittest.TestSuite()
+        suite.addTests(test_consolecmdtools(test) for test in [
+            'test_move_file_move',
+            'test_move_file_copy',
+            'test_move_file_overwrite',
+            'test_move_file_backup',
+            'test_move_file_msgout',
+        ])
+        unittest.TextTestRunner().run(suite)
+    else:
+        unittest.main(verbosity=2, exit=False)  # print more info, no sys.exit() called.

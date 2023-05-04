@@ -143,6 +143,14 @@ False  # if already up-to-date.
 >>> cct.read_file('file')  # Read file using different encoding automatically.
 "file content"
 
+>>> cct.move_file("/path/to/src", "/path/to/dst")  # Move file from src to dst, overwrite if dst already exists.
+
+>>> cct.move_file("/path/to/src", "/path/to/dst", copy=True)  # Copy file from src to dst.
+
+>>> cct.move_file("/path/to/src", "/path/to/dst", backup=True)  # Backup dst file before move or copy.
+
+>>> cct.move_file("/path/to/src", "/path/to/dst", msgout=print)  # Use `print` to handle output logs.
+
 >>> cct.ajax('http://ajax-url')  # Start a AJAX request.
 {'result': 'data'}  # As python dict.
 
