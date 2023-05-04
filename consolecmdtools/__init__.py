@@ -8,7 +8,7 @@ import io
 
 import consoleiotools as cit
 
-__version__ = '3.5.0'
+__version__ = '3.5.1'
 
 
 def banner(text: str) -> str:
@@ -21,7 +21,7 @@ def banner(text: str) -> str:
 
 
 def md5(target, force_text=False) -> str:
-    """Generate MD5 hash for bytes, string, int, file, etc."""
+    """Generate MD5 hash for bytes, str, int, file, etc."""
     import hashlib
 
     if not target:
@@ -36,7 +36,7 @@ def md5(target, force_text=False) -> str:
 
 
 def crc32(target, force_text=False) -> int:
-    """Generate CRC32 hash for bytes, string, int, file, etc."""
+    """Generate CRC32 hash for bytes, str, int, file, etc."""
     import binascii
 
     if not target:
@@ -50,21 +50,21 @@ def crc32(target, force_text=False) -> int:
     return binascii.crc32(target)
 
 
-def main_color(source: str, scale: int = 200, triplet: str = "rgb", is_url: bool = False) -> tuple:
+def main_color(source: str, scale: int = 200, triplet: str = "rgb", is_url: bool = False) -> str:
     """Get a representative color from the source-pointed image
 
     Imports:
-        colorsys: shipped with python.
-        PIL: use `pip install pillow` or install by package manager (apt, apk, etc).
+        colorsys: Shipped with python.
+        PIL: Use `pip install pillow` or install by package manager (apt, apk, etc).
 
     Args:
-        source: str. The URL of the image, or the filepath.
-        scale: int. The size of generated image thumbnail.
-        triplet: str. The return value format. `rgb` for RGB triplet: (255, 255, 255), and `hex` for HEX triplet: '#FFFFFF'.
-        is_url: bool. The source should be downloaded or not.
+        source (str): The URL of the image, or the filepath.
+        scale (int): The size of generated image thumbnail.
+        triplet (str): The return value format. `rgb` for RGB triplet: (255, 255, 255), and `hex` for HEX triplet: '#FFFFFF'.
+        is_url (bool): The source should be downloaded or not.
 
     Returns:
-        The main color of the source image in RGB or HEX format.
+        str: The main color of the source image in RGB or HEX format.
     """
     import colorsys
     try:
@@ -133,7 +133,7 @@ def run_cmd(cmd: str) -> bool:
     """Run command and show if success or failed
 
     Args:
-        cmd: string
+        cmd (str): The command.
     Returns:
         bool: Does this command run successfully
     """
@@ -148,7 +148,7 @@ def read_cmd(cmd: str) -> str:
     """Run command and return command's output
 
     Args:
-        cmd: string
+        cmd (str): The command.
     Returns:
         str: What the command's output to stdout
     """
@@ -166,7 +166,7 @@ def is_cmd_exist(cmd: str) -> bool:
     """Test if command is available for execution
 
     Args:
-        cmd: string
+        cmd (str): The command.
     Returns:
         bool: if the command is exist
     """
@@ -186,8 +186,8 @@ def get_dir(filename: str, mode: str = 'dir') -> str:
     If file located at /path/to/dir/file, then the dirname is "/path/to/dir", and basename is "dir"
 
     Args:
-        filename: str. Local filename, normally it's __file__.
-        mode: str. `file` return the file path, `dir` return the dir path, `basename` return dir basename.
+        filename (str): Local filename, normally it's __file__.
+        mode (str): `file` return the file path, `dir` return the dir path, `basename` return dir basename.
 
     Returns:
         str: file path or dir path or dir basename based on mode.
@@ -209,8 +209,8 @@ def select_path(multiple: bool = False, folder: bool = False, *args, **kwargs):
     """Open a file dialog to get file or folder path.
 
     Args:
-        multiple: bool. The file dialog select multiple files, and return list.
-        folder: bool. The file dialog select folder not file.
+        multiple (bool): The file dialog select multiple files, and return list.
+        folder (bool): The file dialog select folder not file.
         *: Any additional args will considered as filedialog args.
 
     Returns:
@@ -252,11 +252,11 @@ def diff(a, b, meta: bool = False, force_str: bool = False, context: int = 0) ->
     """Compare two strings, lists or files and return their differences as list.
 
     Args:
-        a: str/list/file. The source of comparison.
-        b: str/list/file. The target of comparison.
-        meta: bool. Show the meta data in the first 3 lines.
-        force_str: bool. Set to `True` if you wanna force to compare `a` and `b` as string. Default is False.
-        context: int. Number of context lines returns with diffs. Default is 0, no context lines shows.
+        a (str|list|file): The source of comparison.
+        b (str|list|file): The target of comparison.
+        meta (bool): Show the meta data in the first 3 lines.
+        force_str (bool): Set to `True` if you wanna force to compare `a` and `b` as string. Default is False.
+        context (int): Number of context lines returns with diffs. Default is 0, no context lines shows.
 
     Returns:
         list: Diffs where the dst is not same as src. Only lines with diffs in the result. The first 2 lines are the header of diffs.
@@ -285,10 +285,10 @@ def update_file(filename: str, url: str) -> bool:
     """Check and update file compares with remote_url
 
     Args:
-        filename: str. Local filename, normally it's `__file__`
-        url: str or urllib.request.Request object. Remote url of raw file content. Use urllib.request.Request object for headers.
+        filename (str): Local filename, normally it's `__file__`
+        url (str|urllib.request.Request): Remote url of raw file content. Use urllib.request.Request object for headers.
     Returns:
-        bool: file updated or not
+        bool: File updated or not
     """
     def compare(s1, s2):
         return s1 == s2, len(s2) - len(s1)
@@ -338,7 +338,7 @@ def read_url(source) -> bytes:
     """Try to get file content from the url
 
     Args:
-        source: str or Request. The target url.
+        source (str|Request): The target url.
 
     Returns:
         bytes: The content of the request's response.
@@ -351,11 +351,11 @@ def move_file(src: str, dst: str, copy: bool = False, backup: bool = False, msgo
     """Move or copy file from one place to another.
 
     Args:
-        src: str. Source file path.
-        dst: str. Destination file path.
-        copy: bool. Copy or move source file to destination.
-        backup: bool. Backup destination file or not. `True` means try to backup destination file, pass if destination file does not exist.
-        msgout: function. Output function to handle the outputs. `None` means no outputs.
+        src (str): Source file path.
+        dst (str): Destination file path.
+        copy (bool): Copy or move source file to destination.
+        backup (bool): Backup destination file or not. `True` means try to backup destination file, pass if destination file does not exist.
+        msgout (callable): Output function to handle the outputs. `None` means no outputs.
     """
     import time
     import shutil
@@ -388,9 +388,9 @@ def ajax(url: str, param: dict = {}, method: str = "get"):
     """Get response using AJAX.
 
     Args:
-        url: str. The requesting url.
-        param: dict. The parameters in the request payload.
-        method: str. The method of request, "get" or "post".
+        url (str): The requesting url.
+        param (dict): The parameters in the request payload.
+        method (str): The method of request, "get" or "post".
     Returns:
         dict: The responsed json decoded into a dict.
     """
@@ -435,7 +435,9 @@ def runas_admin(py_file: str) -> bool:
         Syntax of ShellExecuteW: https://docs.microsoft.com/en-us/windows/win32/api/shellapi/nf-shellapi-shellexecutew
 
     Args:
-        py_file: string. The command line arguments passed to python. It should be the script path, such as `__file__`.
+        py_file (str): The command line arguments passed to python. It should be the script path, such as `__file__`.
+    Returns:
+        bool: Command run success.
     """
     import ctypes
     parent_window_handle = None  # no UI
