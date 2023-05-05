@@ -8,7 +8,7 @@ import io
 
 import consoleiotools as cit
 
-__version__ = '3.5.1'
+__version__ = '3.5.2'
 
 
 def banner(text: str) -> str:
@@ -363,20 +363,24 @@ def move_file(src: str, dst: str, copy: bool = False, backup: bool = False, msgo
     def _msg(message):
         if msgout:
             msgout(message)
-    _msg(f"From{' (+Copy)' if copy else ''}: {src}")
-    _msg(f"To{' (+Backup)' if backup else ''}: {dst}")
+    _msg(f"Source File: {src}")
+    _msg(f"Destination File: {dst}")
+    if copy:
+        _msg("Copy Enabled.")
+    if backup:
+        _msg("Backup Enabled.")
     if not os.path.exists(src):
-        raise FileNotFoundError(f"Source file {src} does not exist.")
+        raise FileNotFoundError(f"Source file does not exist.")
     if os.path.exists(dst):
         if backup:
-            dst_backup = f"{dst}.backup.{time.strftime('%Y%m%d%H%M%S')}"
+            dst_backup = f"{ dst}.backup.{time.strftime('%Y%m%d%H%M%S')}"
             shutil.copy2(dst, dst_backup)
-            _msg(f"Destination file {dst} backuped up to {dst_backup}.")
+            _msg(f"Destination file backuped up to `{dst_backup}`.")
         else:
-            _msg(f"Warning: Destination file {dst} already exists and will be overwritten.")
+            _msg("Warning: Destination file already exists and will be overwritten.")
     else:
         if backup:
-            _msg(f"Warning: Destination file {dst} does not exist, backup skipped.")
+            _msg("Warning: Destination file does not exist, backup skipped.")
     if copy:
         shutil.copy2(src, dst)
     else:
