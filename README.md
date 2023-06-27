@@ -80,27 +80,33 @@ hello
 >>> cct.is_cmd_exist("ls")  # Test if a command is exist.
 True
 
->>> cct.get_dir("./file")  # Get the parent folder path of the file.
-'/path/to/dir'  # '/path/to/dir/file' for example
+>>> cct.get_path("./file.txt")  # Get the absolute path.
+'/path/to/file.txt'
 
->>> cct.get_dir("./file", mode="file")  # Get the file absolute path.
-'/path/to/dir/file'
+>>> cct.get_path("/path/to/file.txt", basename=True)  # Get the basename of the file or dir.
+'file.txt'
 
->>> cct.get_dir("./file", mode="basename")  # Get the parent folder name of the file.
-'dir'
+>>> cct.get_path("/path/to/file.txt", ext=True)  # Get the extension of the file or dir.
+'txt'
+
+>>> cct.get_path("/path/to/file.txt", parent=True)  # Get the parent dir path of the file or dir.
+'/path/to'
+
+>>> cct.get_path("/path/to/file.txt", parent=True, basename=True)  # Get the parent dir path's basename of the file or dir.
+'to'
 
 >>> cct.select_path()  # Show file dialog to get file path. Additional args pass to tkinter.filedialog.askopenfilename()
-'/path/to/dir/file'
+'/path/to/file'
 
 >>> cct.select_path(multiple=True)  # Show file dialog to get multiple file paths.
-['/path/1', '/path/2']
+['/path/to/file1', '/path/to/file2']
 
->>> cct.select_path(folder=True)  # Show file dialog to get folder path.
+>>> cct.select_path(dir=True)  # Show file dialog to get dir path.
 '/path/to/dir'
 
->>> cct.show_in_folder("/path/to/file")  # Show file in Explorer/Finder/Folder.
+>>> cct.show_in_dir("/path/to/file")  # Show file in Explorer/Finder/File Manager.
 
->>> cct.show_in_folder("/path/to/file", ask=True)  # Ask before show.
+>>> cct.show_in_dir("/path/to/file", ask=True)  # Ask before show.
 
 >>> cct.diff("str1", "str2")  # Compare 2 strings, return the list of diffs.
 [  # you can use `"\n".join(diff)` to print the diff.

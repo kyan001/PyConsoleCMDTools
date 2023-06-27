@@ -8,7 +8,7 @@ import io
 
 import consoleiotools as cit
 
-__version__ = '3.5.2'
+__version__ = '4.0.0'
 
 
 def banner(text: str) -> str:
@@ -180,41 +180,55 @@ def is_cmd_exist(cmd: str) -> bool:
         return (result != "")
 
 
-def get_dir(filename: str, mode: str = 'dir') -> str:
-    """Get file dir's name and dir's basename.
-
-    If file located at /path/to/dir/file, then the dirname is "/path/to/dir", and basename is "dir"
+def get_path(filepath: str, parent: bool = False, basename: bool = False, ext: bool = False) -> str:
+    """Get file or parent dir absolute path or basename or extension.
 
     Args:
-        filename (str): Local filename, normally it's __file__.
-        mode (str): `file` return the file path, `dir` return the dir path, `basename` return dir basename.
+        filepath (str): The file path. Normally it's `__file__`.
+        parent (bool): Get the parent dir path of the file or dir. Default is False.
+        basename (bool): Get the basename of the file or dir. Default is False.
+        ext (bool): Get the extension of the file or dir. Default is False.
 
     Returns:
-        str: file path or dir path or dir basename based on mode.
+        str: The file or dir path or basename or extension.
+
+    Examples:
+        filepath: '/path/to/filename.txt'
+        basename: 'filename.txt'
+        ext: 'txt'
+        parent: '/path/to'
+        parent + basename: 'to'
+        +---------------------------+
+        |           Path            |
+        +---------------------------+
+        | Parent   | Basename | Ext |
+        |          |          |     |
+        " /path/to / filename . txt "
+        |          |          |     |
+        +----------+----------+-----+
     """
-    file_path = os.path.abspath(filename)
-    dir_path = os.path.dirname(file_path)
-    dir_basename = os.path.basename(dir_path)
-    if mode == 'file':
-        return os.path.abspath(filename)
-    elif mode == 'dir':
-        return dir_path
-    elif mode == 'basename':
-        return dir_basename
+    file_abspath = os.path.abspath(filepath)
+    if parent:
+        path = os.path.dirname(file_abspath)
     else:
-        return dir_path
+        path = file_abspath
+    if ext:
+        return os.path.splitext(path)[1].lstrip('.')
+    if basename:
+        return os.path.basename(path)
+    return path
 
 
-def select_path(multiple: bool = False, folder: bool = False, *args, **kwargs):
-    """Open a file dialog to get file or folder path.
+def select_path(multiple: bool = False, dir: bool = False, *args, **kwargs):
+    """Open a file dialog to get file or dir path.
 
     Args:
         multiple (bool): The file dialog select multiple files, and return list.
-        folder (bool): The file dialog select folder not file.
+        dir (bool): The file dialog select dir not file.
         *: Any additional args will considered as filedialog args.
 
     Returns:
-        str: The path of selected file or folder.
+        str: The path of selected file or dir.
         list: The path list of selected files.
     """
     import tkinter
@@ -222,7 +236,7 @@ def select_path(multiple: bool = False, folder: bool = False, *args, **kwargs):
     tkapp = tkinter.Tk()
     tkapp.withdraw()
     tkapp.update()
-    if folder:
+    if dir:
         path = tkinter.filedialog.askdirectory(*args, **kwargs)
     elif multiple:
         path = tkinter.filedialog.askopenfilenames(*args, **kwargs)
@@ -232,12 +246,18 @@ def select_path(multiple: bool = False, folder: bool = False, *args, **kwargs):
     return path
 
 
-def show_in_folder(path: str, ask: bool = False):
-    """Show file in Explorer/Finder/Folder"""
+def show_in_dir(path: str, ask: bool = False):
+    """Show file in Explorer/Finder/File Manager."""
     import subprocess
     import platform
     if ask:
-        cit.ask("Show in folder?")
+        if sys.platform.startswith("win"):
+            file_manager = "Explorer"
+        elif platform.system() == "Darwin":
+            file_manager = "Finder"
+        else:
+            file_manager = "file manager"
+        cit.ask(f"Show in {file_manager}?")
         if cit.get_choice(('Yes', 'No')) == 'No':
             return False
     if sys.platform.startswith("win"):

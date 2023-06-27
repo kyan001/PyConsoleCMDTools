@@ -134,21 +134,29 @@ class test_consolecmdtools(unittest.TestCase):
             self.assertFalse(cct.is_cmd_exist("notexist"))
             self.assertTrue(cct.is_cmd_exist("ls"))
 
-    def test_get_dir(self):
-        dir_path = cct.get_dir(__file__)
-        self.assertTrue(dir_path.endswith("tests"))
+    def test_get_path_file(self):
+        file_path = cct.get_path(__file__)
+        self.assertTrue(file_path.endswith("test_consolecmdtools.py"))
 
-    def test_get_dir_dir(self):
-        dir_path = cct.get_dir(__file__, mode="dir")
-        self.assertTrue(dir_path.endswith("tests"))
+    def test_get_path_file_basename(self):
+        file_basename = cct.get_path(__file__, basename=True)
+        self.assertEqual(file_basename, "test_consolecmdtools.py")
 
-    def test_get_dir_file(self):
-        file_path = cct.get_dir(__file__, mode="file")
-        self.assertTrue(file_path.endswith(".py"))
+    def test_get_path_file_ext(self):
+        file_ext = cct.get_path(__file__, ext=True)
+        self.assertEqual(file_ext, "py")
 
-    def test_get_dir_basename(self):
-        dir_basename = cct.get_dir(__file__, mode="basename")
-        self.assertEqual(dir_basename, "tests")
+    def test_get_path_parent(self):
+        parent_path = cct.get_path(__file__, parent=True)
+        self.assertTrue(parent_path.endswith("tests"))
+
+    def test_get_path_parent_basename(self):
+        parent_basename = cct.get_path(__file__, parent=True, basename=True)
+        self.assertEqual(parent_basename, "tests")
+
+    def test_get_path_parent_ext(self):
+        parent_ext = cct.get_path(__file__, parent=True, ext=True)
+        self.assertEqual(parent_ext, "")
 
     def test_diff_same(self):
         diffs = cct.diff("test", "test")
