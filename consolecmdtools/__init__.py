@@ -8,7 +8,7 @@ import io
 
 import consoleiotools as cit
 
-__version__ = '4.0.0'
+__version__ = '4.0.1'
 
 
 def banner(text: str) -> str:
@@ -246,7 +246,7 @@ def select_path(multiple: bool = False, dir: bool = False, *args, **kwargs):
     return path
 
 
-def show_in_dir(path: str, ask: bool = False):
+def show_in_file_manager(path: str, ask: bool = False):
     """Show file in Explorer/Finder/File Manager."""
     import subprocess
     import platform
