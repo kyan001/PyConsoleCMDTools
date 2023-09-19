@@ -104,6 +104,38 @@ True
 >>> cct.select_path(dir=True)  # Show file dialog to get dir path.
 '/path/to/dir'
 
+>>> cct.ls_tree(root="/path/to/root")  # Show folders and files in a tree.
+📂 root\
+├──📁 folder\
+│   ├──📄 file1
+│   ├──📄 file2
+
+>>> cct.ls_tree(root="/path/to/root", show_icon=False, ascii=True)  # Show without icons, using ASCII chars.
+root/
+|-- folder/
+|  |-- file1
+|  |-- file2
+
+>>> cct.ls_tree(root="/path/to/root", to_visible=lambda path: path.is_dir())  # Show only folders.
+📂 root\
+├──📁 folder\
+
+>>> cct.ls_tree(root="/path/to/root", to_highlight=lambda path: path.name == "file1")  # Highlight certain file.
+📂 root\
+├──📁 folder\
+│   ├──📄 file1  # highlighted
+│   ├──📄 file2
+
+>>> cct.ls_tree(root="/path/to/root", add_suffix=lambda path: "(current)" if pathe.name == "file1" else "")  # Add suffix to path name.
+📂 root\
+├──📁 folder\
+│   ├──📄 file1 (current)
+│   ├──📄 file2
+
+>>> cct.ls_tree(root="/path/to/root", filter=lambda path: path.name.startswith("file"))  # Filter paths and return as list[str]
+...
+['/path/to/root/folder/file1', '/path/to/root/folder/file2']
+
 >>> cct.show_in_file_manager("/path/to/file")  # Show file in Explorer/Finder/File Manager.
 
 >>> cct.show_in_file_manager("/path/to/file", ask=True)  # Ask before show.

@@ -322,6 +322,11 @@ class test_consolecmdtools(unittest.TestCase):
     def test_select_path(self):
         self.assertEqual(os.path.dirname(cct.select_path(initialdir=test_dir)).replace("/", "\\"), test_dir)
 
+    def test_ls_tree(self):
+        root = "tests"
+        result = cct.ls_tree(root)
+        self.assertTrue(os.path.join(root, "test_consolecmdtools.py") in result)
+
 
 if __name__ == '__main__':
     # SUITE_MODE = True  # Comment this line to run all tests
