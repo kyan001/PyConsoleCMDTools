@@ -14,6 +14,8 @@ project_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, project_dir)
 import consolecmdtools as cct  # noqa
 
+OFFLINE_MODE = True  # Comment this line to run all tests
+
 
 class test_consolecmdtools(unittest.TestCase):
     """consolecmdtools unit tests"""
@@ -103,11 +105,13 @@ class test_consolecmdtools(unittest.TestCase):
         color = cct.main_color(img_file, triplet='hex')
         self.assertEqual(color, '#E2AF6A')
 
+    @unittest.skipIf(OFFLINE_MODE, 'Offline mode')
     def test_main_color_rgb_url(self):
         img_url = "https://raw.githubusercontent.com/kyan001/PyConsoleCMDTools/main/tests/image.jpg"
         color = cct.main_color(img_url, is_url=True)
         self.assertEqual(color, (226, 175, 106))
 
+    @unittest.skipIf(OFFLINE_MODE, 'Offline mode')
     def test_main_color_hex_url(self):
         img_url = "https://raw.githubusercontent.com/kyan001/PyConsoleCMDTools/main/tests/image.jpg"
         color = cct.main_color(img_url, is_url=True, triplet='hex')
@@ -221,6 +225,7 @@ class test_consolecmdtools(unittest.TestCase):
         b = os.path.join(project_dir, "tests", "testfile2")
         self.assertTrue("-{}".format(a) in cct.diff(a, b, force_str=True))
 
+    @unittest.skipIf(OFFLINE_MODE, 'Offline mode')
     def test_update_file(self):
         url = "https://raw.githubusercontent.com/kyan001/PyConsoleCMDTools/main/tests/testfile"
         filepath = os.path.join(project_dir, "tests", "testfile")
@@ -294,6 +299,7 @@ class test_consolecmdtools(unittest.TestCase):
             self.assertTrue(src in self.fakeout.readline())
             self.assertTrue(dst in self.fakeout.readline())
 
+    @unittest.skipIf(OFFLINE_MODE, 'Offline mode')
     def test_ajax_get(self):
         url = "https://yesno.wtf/api"
         param = {"force": "yes"}
