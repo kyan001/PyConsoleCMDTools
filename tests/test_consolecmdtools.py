@@ -328,10 +328,20 @@ class test_consolecmdtools(unittest.TestCase):
     def test_select_path(self):
         self.assertEqual(os.path.dirname(cct.select_path(initialdir=test_dir)).replace("/", "\\"), test_dir)
 
+    def test_bfs_walk(self):
+        root = "tests"
+        result = [path.name for path in cct.bfs_walk(root)]
+        self.assertIn("test_consolecmdtools.py", result)
+
+    def test_filter_dir(self):
+        root = "tests"
+        result = cct.filter_dir(root)
+        self.assertIn(os.path.join(root, "test_consolecmdtools.py"), result)
+
     def test_ls_tree(self):
         root = "tests"
-        result = cct.ls_tree(root)
-        self.assertTrue(os.path.join(root, "test_consolecmdtools.py") in result)
+        cct.ls_tree(root)
+        self.assertIn("test_consolecmdtools.py", self.fakeout.readline())
 
 
 if __name__ == '__main__':
