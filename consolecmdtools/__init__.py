@@ -9,7 +9,7 @@ import pathlib
 
 import consoleiotools as cit
 
-__version__ = '4.1.2'
+__version__ = '5.0.0'
 
 
 def banner(text: str) -> str:
@@ -247,59 +247,82 @@ def select_path(multiple: bool = False, dir: bool = False, *args, **kwargs):
     return path
 
 
-def ls_tree(root: str, show_icon: bool = True, ascii: bool = False, to_visible: callable = lambda path: True, to_highlight: callable = lambda path: False, add_suffix: callable = None, filter: callable = lambda path: True) -> list[str]:
-    """List folders and files under `root` folder.
+def bfs_walk(root: str) -> pathlib.Path:
+    """Breadth First Search the `root` folder."""
+    queue = [pathlib.Path(root)]
+    while queue:
+        path = queue.pop(0)
+        yield path
+        if path.is_dir():
+            queue = [p for p in path.iterdir()] + queue  # insert into the front of the queue
+
+
+def filter_dir(root: str, filter: callable = None) -> list[str]:
+    """List folders and files under `root` folder with filter.
+
+    Args:
+        root (str): root folder to list.
+        filter (callable): a function to indicate if the folder or file should be returned. Defaults to return every path. `filter(path: str) -> bool`.
+
+    Returns:
+        list[str]: a list of paths that are filtered by `filter` or everything traversed.
+    """
+    paths = []
+    for path in bfs_walk(root):
+        if (not filter) or filter(path):
+            paths.append(str(path))
+    return paths
+
+
+
+def ls_tree(root: str, show_icon: bool = True, ascii: bool = False, to_visible: callable = lambda path: True, to_highlight: callable = lambda path: False, add_suffix: callable = None):
+    """Print folders and files under `root` folder in tree structure.
 
     Args:
         root (str): root folder to list.
         show_icon (bool): show icon for folders and files. Defaults to True.
         ascii (bool): use ascii characters for tree structure. Defaults to False.
         to_visible (callable): a function to indicate if the folder or file should be visible. Default to show every path. `to_visible(path: str) -> bool`.
-        to_highlight (callable): a function to indicate if the folder or file should be highlighted. Defaults to
-        highlight nothing. `to_highlight(path: str) -> bool`.
+        to_highlight (callable): a function to indicate if the folder or file should be highlighted. Defaults to highlight nothing. `to_highlight(path: str) -> bool`.
         add_suffix (callable): a function to append as suffix to the folder or file name. Defaults to None. `add_suffix(path: str) -> str`.
-        filter (callable): a function to indicate if the folder or file should be returned. Defaults to return every path. `filter(path: str) -> bool`.
-
-    Returns:
-        list[str]: a list of paths that are filtered by `filter` or everything traversed.
     """
-    def bfs_walk(root: str):
-        """Breadth First Search the `root` folder."""
-        if os.path.isdir(root):
-            queue = [pathlib.Path(root)]
-            while queue:
-                path = queue.pop(0)
-                yield path
-                if path.is_dir():
-                    queue = [p for p in path.iterdir()] + queue  # insert into the front of the queue
 
-    paths = []
+    def is_visible(path: pathlib.Path) -> bool:
+        """Check if the path has visible files or folders."""
+        if not to_visible:
+            return False
+        if to_visible(path):
+            return True
+        if path.is_dir():
+            for child_path in path.iterdir():  # only direct folders and files in path
+                if is_visible(child_path):
+                    return True
+        return False
+
     for path in bfs_walk(root):
         # construct text
+        path_text = path.name
+        # add prefix
         depth = len(path.relative_to(root).parts)
-        icon = " "
-        if show_icon:
-            if path.is_dir():
-                icon = "📁"
-            else:
-                icon = "📄"
+        icon = " " if not show_icon else ("📁" if path.is_dir() else "📄")
         indent_char = f"[dim]{'|' if ascii else '│'}[/]   "
         dash_char = f"{'|--' if ascii else '├──'}{icon}"
         prefix = (indent_char * (depth - 1) + dash_char) if depth > 0 else "📂"  # add tree branchs characters
+        # add suffix
         suffix = add_suffix(path) if add_suffix else ""
-        path_text = path.name
+        # style hightlights
         if to_highlight and to_highlight(path):  # highlight the path if needed
             path_text = f"[u]{path_text}[/]"
+        # style hiddens
         if path.name.startswith("."):  # dim hidden files and folders
             path_text = f"[dim]{path_text}[/]"
+        # style dirs
         path_text = f"{path_text}{os.sep if path.is_dir() else ''}"  # add "/" or "\" to the end of the folder name
+        # assemble
         full_text = f"{prefix} {path_text} {suffix}"
-        # post-processings
-        if (filter and filter(path)):  # filter the path if needed
-            paths.append(str(path))
-        if (to_visible and to_visible(path)):  # show the path if needed
+        # print
+        if is_visible(path):  # check if the path is visible, or the path include visible files or folders
             cit.print(full_text)
-    return paths
 
 
 def show_in_file_manager(path: str, ask: bool = False):
