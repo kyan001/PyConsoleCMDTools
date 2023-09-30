@@ -104,6 +104,12 @@ True
 >>> cct.select_path(dir=True)  # Show file dialog to get dir path.
 '/path/to/dir'
 
+>>> cct.bfs_walk("/path/to/root")  # Get all paths in the root dir using Breadth-first search.
+['/path/to/root', '/path/to/root/folder', '/path/to/root/folder/file1', '/path/to/root/folder/file2']
+
+>>> cct.filter_dir("/path/to/root", filter=lambda path: path.name.startswith("f"))  # Filter paths and return as list[str]
+['/path/to/root/folder', '/path/to/root/folder/file1', '/path/to/root/folder/file2']
+
 >>> cct.ls_tree(root="/path/to/root")  # Show folders and files in a tree.
 📂 root\
 ├──📁 folder\
@@ -131,10 +137,6 @@ root/
 ├──📁 folder\
 │   ├──📄 file1 (current)
 │   ├──📄 file2
-
->>> cct.ls_tree(root="/path/to/root", filter=lambda path: path.name.startswith("file"))  # Filter paths and return as list[str]
-...
-['/path/to/root/folder/file1', '/path/to/root/folder/file2']
 
 >>> cct.show_in_file_manager("/path/to/file")  # Show file in Explorer/Finder/File Manager.
 
