@@ -9,7 +9,10 @@ import pathlib
 
 import consoleiotools as cit
 
-__version__ = '5.0.0'
+from .path import Path
+
+
+__version__ = '6.0.1'
 
 
 def banner(text: str) -> str:
@@ -181,43 +184,16 @@ def is_cmd_exist(cmd: str) -> bool:
         return (result != "")
 
 
-def get_path(filepath: str, parent: bool = False, basename: bool = False, ext: bool = False) -> str:
+def get_path(filepath: str) -> Path:
     """Get file or parent dir absolute path or basename or extension.
 
     Args:
         filepath (str): The file path. Normally it's `__file__`.
-        parent (bool): Get the parent dir path of the file or dir. Default is False.
-        basename (bool): Get the basename of the file or dir. Default is False.
-        ext (bool): Get the extension of the file or dir. Default is False.
 
     Returns:
-        str: The file or dir path or basename or extension.
-
-    Examples:
-        filepath: '/path/to/filename.txt'
-        basename: 'filename.txt'
-        ext: 'txt'
-        parent: '/path/to'
-        parent + basename: 'to'
-        +---------------------------+
-        |           Path            |
-        +---------------------------+
-        | Parent   | Basename | Ext |
-        |          |          |     |
-        " /path/to / filename . txt "
-        |          |          |     |
-        +----------+----------+-----+
+        Path: The path object can be used like str.
     """
-    file_abspath = os.path.abspath(filepath)
-    if parent:
-        path = os.path.dirname(file_abspath)
-    else:
-        path = file_abspath
-    if ext:
-        return os.path.splitext(path)[1].lstrip('.')
-    if basename:
-        return os.path.basename(path)
-    return path
+    return Path(filepath)
 
 
 def select_path(multiple: bool = False, dir: bool = False, *args, **kwargs):
@@ -257,7 +233,7 @@ def bfs_walk(root: str) -> pathlib.Path:
             queue = [p for p in path.iterdir()] + queue  # insert into the front of the queue
 
 
-def filter_dir(root: str, filter: callable = None) -> list[str]:
+def get_files(root: str, filter: callable = None) -> list[str]:
     """List folders and files under `root` folder with filter.
 
     Args:
@@ -272,7 +248,6 @@ def filter_dir(root: str, filter: callable = None) -> list[str]:
         if (not filter) or filter(path):
             paths.append(str(path))
     return paths
-
 
 
 def ls_tree(root: str, show_icon: bool = True, ascii: bool = False, to_visible: callable = lambda path: True, to_highlight: callable = lambda path: False, add_suffix: callable = None):

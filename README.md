@@ -81,18 +81,29 @@ hello
 True
 
 >>> cct.get_path("./file.txt")  # Get the absolute path.
-'/path/to/file.txt'
+Path('/path/to/file.txt')  # Path Object which is a subclass of str.
 
->>> cct.get_path("/path/to/file.txt", basename=True)  # Get the basename of the file or dir.
+>>> cct.get_path("./file.txt").split('/')  # Path Object can be used as str.
+['path', 'to', 'file.txt']
+
+>>> cct.get_path("./file.txt").path  # Get the original path.
+'./file.txt'
+
+>>> cct.get_path("./file.txt").abs  # Get the absolute path. Same as `get_path("./file.txt")` itself.
+
+>>> cct.get_path("/path/to/file.txt").basename  # Get the basename of the file or dir.
 'file.txt'
 
->>> cct.get_path("/path/to/file.txt", ext=True)  # Get the extension of the file or dir.
+>>> cct.get_path("/path/to/file.txt").ext  # Get the extension of the path. If the path is a dir, return ''.
 'txt'
 
->>> cct.get_path("/path/to/file.txt", parent=True)  # Get the parent dir path of the file or dir.
+>>> cct.get_path("/path/to/file.txt").stem  # Get the name of the path without extension. If the path is a dir, return its basename.
+'file'
+
+>>> cct.get_path("/path/to/file.txt").parent  # Get the parent dir path of the file or dir.
 '/path/to'
 
->>> cct.get_path("/path/to/file.txt", parent=True, basename=True)  # Get the parent dir path's basename of the file or dir.
+>>> cct.get_path("/path/to/file.txt").parent.basename  # Get the parent dir path's basename of the file or dir.
 'to'
 
 >>> cct.select_path()  # Show file dialog to get file path. Additional args pass to tkinter.filedialog.askopenfilename()
@@ -107,7 +118,7 @@ True
 >>> cct.bfs_walk("/path/to/root")  # Get all paths in the root dir using Breadth-first search.
 ['/path/to/root', '/path/to/root/folder', '/path/to/root/folder/file1', '/path/to/root/folder/file2']
 
->>> cct.filter_dir("/path/to/root", filter=lambda path: path.name.startswith("f"))  # Filter paths and return as list[str]
+>>> cct.get_files("/path/to/root", filter=lambda path: path.name.startswith("f"))  # Filter paths and return as list[str]
 ['/path/to/root/folder', '/path/to/root/folder/file1', '/path/to/root/folder/file2']
 
 >>> cct.ls_tree(root="/path/to/root")  # Show folders and files in a tree.

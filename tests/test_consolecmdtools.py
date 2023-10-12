@@ -143,24 +143,32 @@ class test_consolecmdtools(unittest.TestCase):
         self.assertTrue(file_path.endswith("test_consolecmdtools.py"))
 
     def test_get_path_file_basename(self):
-        file_basename = cct.get_path(__file__, basename=True)
+        file_basename = cct.get_path(__file__).basename
         self.assertEqual(file_basename, "test_consolecmdtools.py")
 
     def test_get_path_file_ext(self):
-        file_ext = cct.get_path(__file__, ext=True)
+        file_ext = cct.get_path(__file__).ext
         self.assertEqual(file_ext, "py")
 
+    def test_get_path_file_stem(self):
+        file_stem = cct.get_path(__file__).stem
+        self.assertEqual(file_stem, "test_consolecmdtools")
+
     def test_get_path_parent(self):
-        parent_path = cct.get_path(__file__, parent=True)
+        parent_path = cct.get_path(__file__).parent
         self.assertTrue(parent_path.endswith("tests"))
 
     def test_get_path_parent_basename(self):
-        parent_basename = cct.get_path(__file__, parent=True, basename=True)
+        parent_basename = cct.get_path(__file__).parent.basename
         self.assertEqual(parent_basename, "tests")
 
     def test_get_path_parent_ext(self):
-        parent_ext = cct.get_path(__file__, parent=True, ext=True)
+        parent_ext = cct.get_path(__file__).parent.ext
         self.assertEqual(parent_ext, "")
+
+    def test_get_path_parent_stem(self):
+        parent_stem = cct.get_path(__file__).parent.stem
+        self.assertEqual(parent_stem, "tests")
 
     def test_diff_same(self):
         diffs = cct.diff("test", "test")
@@ -333,9 +341,9 @@ class test_consolecmdtools(unittest.TestCase):
         result = [path.name for path in cct.bfs_walk(root)]
         self.assertIn("test_consolecmdtools.py", result)
 
-    def test_filter_dir(self):
+    def test_get_files(self):
         root = "tests"
-        result = cct.filter_dir(root)
+        result = cct.get_files(root)
         self.assertIn(os.path.join(root, "test_consolecmdtools.py"), result)
 
     def test_ls_tree(self):
@@ -345,8 +353,8 @@ class test_consolecmdtools(unittest.TestCase):
 
 
 if __name__ == '__main__':
-    # SUITE_MODE = True  # Comment this line to run all tests
-    if "SUITE_MODE" in locals():
+    # ONLY_MOVE_FILE = True  # Comment this line to run all tests
+    if "ONLY_MOVE_FILE" in locals():
         suite = unittest.TestSuite()
         suite.addTests(test_consolecmdtools(test) for test in [
             'test_move_file_move',
