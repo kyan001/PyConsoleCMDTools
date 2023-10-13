@@ -45,7 +45,7 @@ class Path(str):
         return f"Path({self.path!r})"
 
     @property
-    def parent(self) -> Path:
+    def parent(self) -> 'Path':
         return Path(os.path.dirname(self.abs))
 
     @property
