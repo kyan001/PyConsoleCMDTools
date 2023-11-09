@@ -12,7 +12,7 @@ import consoleiotools as cit
 from .path import Path
 
 
-__version__ = '6.0.2'
+__version__ = '6.0.3'
 
 
 def banner(text: str) -> str:
@@ -233,7 +233,7 @@ def bfs_walk(root: str) -> pathlib.Path:
             queue = [p for p in path.iterdir()] + queue  # insert into the front of the queue
 
 
-def get_files(root: str, filter: callable = None) -> list[str]:
+def get_files(root: str, filter: callable = None) -> list:
     """List folders and files under `root` folder with filter.
 
     Args:
