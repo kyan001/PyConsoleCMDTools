@@ -12,7 +12,7 @@ import consoleiotools as cit
 from .path import Path
 
 
-__version__ = '6.0.3'
+__version__ = '6.1.0'
 
 
 def banner(text: str) -> str:
@@ -233,7 +233,7 @@ def bfs_walk(root: str) -> pathlib.Path:
             queue = [p for p in path.iterdir()] + queue  # insert into the front of the queue
 
 
-def get_files(root: str, filter: callable = None) -> list:
+def get_paths(root: str, filter: callable = None) -> list:
     """List folders and files under `root` folder with filter.
 
     Args:
@@ -248,6 +248,12 @@ def get_files(root: str, filter: callable = None) -> list:
         if (not filter) or filter(path):
             paths.append(str(path))
     return paths
+
+
+@cit.deprecated_by(get_paths)
+def get_files(root: str, filter: callable = None) -> list:
+    pass
+
 
 
 def ls_tree(root: str, show_icon: bool = True, ascii: bool = False, to_visible: callable = lambda path: True, to_highlight: callable = lambda path: False, add_suffix: callable = None):

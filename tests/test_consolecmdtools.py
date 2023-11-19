@@ -8,6 +8,7 @@ from unittest.mock import patch
 import FakeOut
 import FakeIn
 import FakeOs
+import FakeErr
 
 test_dir = os.path.dirname(os.path.abspath(__file__))
 project_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -29,6 +30,10 @@ class test_consolecmdtools(unittest.TestCase):
         self.console_in = sys.stdin
         self.fakein = FakeIn.FakeIn()
         sys.stdin = self.fakein
+        # redirect stderr
+        self.console_err = sys.stderr
+        self.fakeerr = FakeErr.FakeErr()
+        sys.stderr = self.fakeerr
         # monkey patch
         self.os_system = os.system
         self.fakeos = FakeOs.FakeOs()
@@ -240,7 +245,7 @@ class test_consolecmdtools(unittest.TestCase):
         result = cct.update_file(filepath, url)
         expect = "testfile is already up-to-date."
         self.assertFalse(result)
-        self.assertTrue(expect in self.fakeout.readline())
+        self.assertIn(expect, self.fakeout.readline())
 
     def test_read_file(self):
         filepath = os.path.join(project_dir, "tests", "testfile")
@@ -304,8 +309,8 @@ class test_consolecmdtools(unittest.TestCase):
             cct.move_file(src, dst, msgout=print)
             self.assertFalse(os.path.exists(src))
             self.assertTrue(os.path.exists(dst))
-            self.assertTrue(src in self.fakeout.readline())
-            self.assertTrue(dst in self.fakeout.readline())
+            self.assertIn(src, self.fakeout.readline())
+            self.assertIn(dst, self.fakeout.readline())
 
     @unittest.skipIf(OFFLINE_MODE, 'Offline mode')
     def test_ajax_get(self):
@@ -341,9 +346,15 @@ class test_consolecmdtools(unittest.TestCase):
         result = [path.name for path in cct.bfs_walk(root)]
         self.assertIn("test_consolecmdtools.py", result)
 
-    def test_get_files(self):
+    def test_get_files(self):  # deprecated
         root = "tests"
         result = cct.get_files(root)
+        self.assertIn("DeprecationWarning: Function `get_files` is deprecated, now calling `get_paths` instead.", self.fakeerr.readline())
+        self.assertIn(os.path.join(root, "test_consolecmdtools.py"), result)
+
+    def test_get_paths(self):
+        root = "tests"
+        result = cct.get_paths(root)
         self.assertIn(os.path.join(root, "test_consolecmdtools.py"), result)
 
     def test_ls_tree(self):

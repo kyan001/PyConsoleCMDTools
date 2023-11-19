@@ -118,7 +118,7 @@ Path('/path/to/file.txt')  # Path Object which is a subclass of str.
 >>> cct.bfs_walk("/path/to/root")  # Get all paths in the root dir using Breadth-first search.
 ['/path/to/root', '/path/to/root/folder', '/path/to/root/folder/file1', '/path/to/root/folder/file2']
 
->>> cct.get_files("/path/to/root", filter=lambda path: path.name.startswith("f"))  # Filter paths and return as list[str]
+>>> cct.get_paths("/path/to/root", filter=lambda path: path.name.startswith("f"))  # Filter paths and return as list[str]
 ['/path/to/root/folder', '/path/to/root/folder/file1', '/path/to/root/folder/file2']
 
 >>> cct.ls_tree(root="/path/to/root")  # Show folders and files in a tree.
