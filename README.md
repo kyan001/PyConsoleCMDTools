@@ -80,6 +80,11 @@ hello
 >>> cct.is_cmd_exist("ls")  # Test if a command is exist.
 True
 
+>>> cct.install_package("git")  # Install a package.
+True
+
+>>> cct.install_package("ping3", "pip3")  # Install a package using a different package manager.
+
 >>> cct.get_path("./file.txt")  # Get the absolute path.
 Path('/path/to/file.txt')  # Path Object which is a subclass of str.
 

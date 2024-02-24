@@ -143,6 +143,24 @@ class test_consolecmdtools(unittest.TestCase):
             self.assertFalse(cct.is_cmd_exist("notexist"))
             self.assertTrue(cct.is_cmd_exist("ls"))
 
+    def test_install_package_name_str(self):
+        result = cct.install_package("notexist")
+        self.assertIn("notexist", self.fakeout.readline())
+        self.assertTrue(result)
+
+    def test_install_package_manager_notexist(self):
+        result = cct.install_package("notexist", manager="notexist")
+        self.assertIn("Unsupported", self.fakeout.readline())
+        self.assertFalse(result)
+
+    def test_install_package_manager_str(self):
+        result = cct.install_package("notexist", manager="pip3")
+        self.assertIn("pip3", self.fakeout.readline())
+        self.assertTrue(result)
+
+    def test_install_package_manager_dict(self):
+        result = cct.install_package("notexist", manager={"Windows": "notexist", "Linux": "notexit"})
+
     def test_get_path_file(self):
         file_path = cct.get_path(__file__)
         self.assertTrue(file_path.endswith("test_consolecmdtools.py"))
