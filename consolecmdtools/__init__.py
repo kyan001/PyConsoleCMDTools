@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import os
 import sys
+import platform
 import urllib.request
 import json
 import io
@@ -12,7 +13,7 @@ import consoleiotools as cit
 from .path import Path
 
 
-__version__ = '6.1.0'
+__version__ = '6.1.1'
 
 
 def banner(text: str) -> str:
@@ -111,26 +112,22 @@ def main_color(source: str, scale: int = 200, triplet: str = "rgb", is_url: bool
 
 def clear_screen():
     """Clear the console screen"""
-    if sys.platform.startswith("win"):  # Windows
+    if platform.system() == "Windows":  # Windows
         os.system("cls")
-    elif os.name == "posix":  # Linux and Unix
+    elif platform.system() == "Linux":  # Linux
         os.system("clear")
-    elif sys.platform == "darwin":  # macOS
+    elif platform.system() == "Darwin":  # macOS
         os.system("clear")
-    else:
-        cit.err("No clearScreen for " + sys.platform)
+    else:  # Other OS
+        os.system("clear")
 
 
 def get_py_cmd() -> str:
     """Get OS's python command"""
-    if sys.platform.startswith("win"):
-        return "py"
-    elif os.name == "posix":
-        return "python3"
-    elif sys.platform == "darwin":
-        return "python3"
-    else:
-        return sys.executable
+    for cmd in ("py", "python3", "python"):
+        if is_cmd_exist(cmd):
+            return cmd
+    return sys.executable
 
 
 def run_cmd(cmd: str) -> bool:
@@ -156,14 +153,12 @@ def read_cmd(cmd: str) -> str:
     Returns:
         str: What the command's output to stdout
     """
-    import shlex
     import subprocess
 
     cit.echo(cmd, pre="command")
-    args = shlex.split(cmd)
-    proc = subprocess.Popen(args, stdout=subprocess.PIPE)
+    proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True, text=True)  # text=True for str output, shell=True for run cmd directly in shell instead of run cmd.exe
     (proc_stdout, proc_stderr) = proc.communicate(input=None)  # proc_stdin
-    return proc_stdout.decode()  # Decode stdout and stderr bytes to str
+    return proc_stdout  # also proc.returncode, proc_stderr
 
 
 def is_cmd_exist(cmd: str) -> bool:
@@ -174,7 +169,7 @@ def is_cmd_exist(cmd: str) -> bool:
     Returns:
         bool: if the command is exist
     """
-    if sys.platform.startswith('win'):  # Windows
+    if platform.system() == "Windows":  # Windows
         result = os.system("where {} >nul 2>&1".format(cmd))
         return (result == 0)
     else:  # Linux, Unix, macOS
@@ -311,7 +306,7 @@ def show_in_file_manager(path: str, ask: bool = False):
     import subprocess
     import platform
     if ask:
-        if sys.platform.startswith("win"):
+        if platform.system() == "Windows":
             file_manager = "Explorer"
         elif platform.system() == "Darwin":
             file_manager = "Finder"
@@ -320,11 +315,11 @@ def show_in_file_manager(path: str, ask: bool = False):
         cit.ask(f"Show in {file_manager}?")
         if cit.get_choice(('Yes', 'No')) == 'No':
             return False
-    if sys.platform.startswith("win"):
+    if platform.system() == "Windows":
         os.startfile(path)
     elif platform.system() == "Darwin":
         subprocess.Popen(["open", path])
-    else:
+    else:  # Unix-like
         subprocess.Popen(["xdg-open", path])
 
 

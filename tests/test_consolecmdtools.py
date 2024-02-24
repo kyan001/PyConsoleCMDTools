@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import sys
+import platform
 import os
 import unittest
 import tempfile
@@ -135,8 +136,7 @@ class test_consolecmdtools(unittest.TestCase):
         self.assertEqual(self.fakeos.readline(), "Test Command")
 
     def test_read_cmd(self):
-        cmd = "printf" if sys.platform.startswith('win') else "echo"
-        self.assertEqual(cct.read_cmd("{} 'Test Text'".format(cmd)).strip(), "Test Text")
+        self.assertEqual(cct.read_cmd("echo Test Text").strip(), "Test Text")
 
     def test_is_cmd_exist(self):
         with patch("os.system", new=self.os_system):
@@ -323,16 +323,16 @@ class test_consolecmdtools(unittest.TestCase):
     def test_is_python3(self):
         self.assertEqual(cct.is_python3(), True)
 
-    @unittest.skipUnless(sys.platform.startswith('win'), 'requires Windows')
+    @unittest.skipUnless(platform.system() == "Windows", 'requires Windows')
     def test_is_admin(self):
         self.assertEqual(cct.is_admin(), False)
 
-    @unittest.skipUnless(sys.platform.startswith('win'), 'requires Windows')
+    @unittest.skipUnless(platform.system() == "Windows", 'requires Windows')
     def test_runas_admin(self):
         script_path = os.path.join(project_dir, "tests", "test_runas.py")
         self.assertEqual(cct.runas_admin(script_path), True)
 
-    @unittest.skipUnless(sys.platform.startswith('win'), 'requires Windows')
+    @unittest.skipUnless(platform.system() == "Windows", 'requires Windows')
     def test_runas_admin_error(self):
         with self.assertRaises(FileNotFoundError):
             cct.runas_admin("not-exist.file")

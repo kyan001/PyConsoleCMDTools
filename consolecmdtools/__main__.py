@@ -2,16 +2,22 @@ import consoleiotools as cit
 import consolecmdtools as cct
 
 
-def inspect(func_name, *args, **kwargs):
+def inspect(func_name, *args, subattrs: str = None, **kwargs):
     cit.br()
     args_txt = ""
     if args:
         args_txt += ", ".join(f"{('`' + a + '`') if isinstance(a, str) else str(a)}" for a in args)
     if kwargs:
         args_txt += ", " + ", ".join(f"{k}=" + f"{('`' + v + '`') if isinstance(v, str) else str(v)}" for k, v in kwargs.items())
-    cit.print(f"[dim bright_white]# {func_name}({args_txt})")
-    return getattr(cct, func_name)(*args, **kwargs)
-
+    repr_txt = f"{func_name}({args_txt})"
+    result = getattr(cct, func_name)(*args, **kwargs)
+    if subattrs:
+        for subattr in subattrs.split("."):
+            if subattr:
+                repr_txt += f".{subattr}"
+                result = getattr(result, subattr)
+    cit.print(f"[dim bright_white]# {repr_txt}")
+    return result
 
 def examples():
     inspect("clear_screen")
@@ -28,9 +34,10 @@ def examples():
     inspect("run_cmd", "echo hello")
     cit.print(inspect("read_cmd", "echo hello"))
     cit.print(inspect("is_cmd_exist", "ls"))
-    cit.print(inspect("get_dir", "README.md"))
-    cit.print(inspect("get_dir", "README.md", mode="file"))
-    cit.print(inspect("get_dir", "README.md", mode="basename"))
+    cit.print(inspect("get_path", "README.md", subattrs=".path"))
+    cit.print(inspect("get_path", "README.md", subattrs=".parent"))
+    cit.print(inspect("get_path", "README.md", subattrs=".basename"))
+    cit.print(inspect("get_path", "README.md", subattrs=".parent.basename"))
     for line in inspect("diff", "str 1", "str 2"):
         cit.print(line)
     for line in inspect("diff", "str 1", "str 2", meta=True):
