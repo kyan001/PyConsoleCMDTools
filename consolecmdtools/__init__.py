@@ -6,6 +6,7 @@ import urllib.request
 import json
 import io
 import pathlib
+import typing
 # !! some imports are lazy-loaded
 
 import consoleiotools as cit
@@ -13,7 +14,7 @@ import consoleiotools as cit
 from .path import Path
 
 
-__version__ = '6.1.1'
+__version__ = '6.2.0'
 
 
 def banner(text: str) -> str:
@@ -25,7 +26,7 @@ def banner(text: str) -> str:
     return "\n".join([top_line, middle_line, bottom_line])
 
 
-def md5(target, force_text=False) -> str:
+def md5(target: any, force_text: bool = False) -> str:
     """Generate MD5 hash for bytes, str, int, file, etc."""
     import hashlib
 
@@ -40,7 +41,7 @@ def md5(target, force_text=False) -> str:
     return hashlib.md5(target).hexdigest()
 
 
-def crc32(target, force_text=False) -> int:
+def crc32(target: any, force_text: bool = False) -> int:
     """Generate CRC32 hash for bytes, str, int, file, etc."""
     import binascii
 
@@ -143,6 +144,7 @@ def run_cmd(cmd: str) -> bool:
     is_success = (os.system(cmd) == SUCCESS_CODE)
     if not is_success:
         cit.warn("Command Failed")
+    return is_success
 
 
 def read_cmd(cmd: str) -> str:
@@ -177,6 +179,102 @@ def is_cmd_exist(cmd: str) -> bool:
         result = proc.read()
         proc.close()
         return (result != "")
+
+
+def install_package(name: typing.Union[str, dict], manager: typing.Union[str, dict] = {"Windows": "scoop", "Linux": "apt", "Darwin": "brew", "*": "pip3"}) -> bool:
+    """Install package using package manager
+
+    Args:
+        package (str|dict): The package name or a dict of package names for different platforms. If this is a dict, the key should be the platform name from `platform.system()` or `*` for default, and the value should be the package name.
+        manager (str|dict): The package manager or a dict of package managers for different platforms. If is a dict, the key should be the platform name from `platform.system()` or `*` for default, and the value should be the package manager name. Defaults to `{"Windows": "scoop", "Linux": "apt", "Darwin": "brew", "*": "pip3"}`.
+
+    Returns:
+        bool: Does this command run successfully
+    """
+    def extract_package_info(data: typing.Union[str, dict], title: str) -> str:
+        """Extract package info from input data
+
+        Args:
+            data (str|dict): The package data or a dict of package datas for different platforms.
+            title (str): The title of the data, such as "package name" or "package manager".
+
+        Returns:
+            str: The package name or package manager name.
+        """
+        if isinstance(data, dict):
+            result = data.get(platform.system())
+            if result:
+                return result
+            cit.warn(f"No {title} found for {platform.system()}")
+            result = data.get("*")
+            if result:
+                cit.warn(f"Using default {title}: {result}")
+                return result
+            cit.err(f"No default {title} found!")
+            cit.info(f"Supported {title} platforms: {data.keys()}")
+            return False
+        elif isinstance(data, str):
+            return data
+        else:
+            cit.err(f"Unsupported type of {title} data: {type(data)}")
+            return False
+
+    # check inputs
+    if not name:
+        cit.err("No package name provided!")
+        return False
+    cit.info(f"Platform: {platform.system()}")
+    manager_name = extract_package_info(manager, "package manager")
+    cit.info(f"Package Manager: {manager_name}")
+    package_name = extract_package_info(name, "package name")
+    cit.info(f"Package Name: {package_name}")
+    # Install package
+    available_managers = {
+        "scoop": {  # Scoop (Windows)
+            "command": "scoop",
+            "commandline": "scoop install {}",
+        },
+        "choco": {  # Chocolatey (Windows)
+            "command": "choco",
+            "commandline": "choco install {}",
+        },
+        "brew": {  # Homebrew (macOS)
+            "command": "brew",
+            "commandline": "brew install {}",
+        },
+        "port": {  # MacPorts (macOS)
+            "command": "port",
+            "commandline": "sudo port install {}",
+        },
+        "apt": {  # APT (Debian/Ubuntu)
+            "command": "apt",
+            "commandline": "sudo apt install {}",
+        },
+        "snap": {  # Snap (Ubuntu)
+            "command": "snap",
+            "commandline": "sudo snap install {}",
+        },
+        "pip": {  # pip (Python)
+            "command": "pip",
+            "commandline": "pip install --user {}",
+        },
+        "pip3": {  # pip3 (Python3)
+            "command": "pip3",
+            "commandline": "pip3 install --user {}",
+        },
+        "npm": {  # npm (Node.js)
+            "command": "npm",
+            "commandline": "npm install -g {}",
+        },
+    }
+    current_manager = available_managers.get(manager_name)
+    if not current_manager:
+        cit.err(f"Unsupported package manager: {manager_name}!")
+        return False
+    if not is_cmd_exist(current_manager["command"]):
+        cit.err(f"{manager_name} is not installed!")
+        return False
+    return run_cmd(current_manager["commandline"].format(package_name))
 
 
 def get_path(filepath: str) -> Path:
@@ -218,8 +316,15 @@ def select_path(multiple: bool = False, dir: bool = False, *args, **kwargs):
     return path
 
 
-def bfs_walk(root: str) -> pathlib.Path:
-    """Breadth First Search the `root` folder."""
+def bfs_walk(root: str) -> typing.Generator[pathlib.Path, None, None]:
+    """Breadth First Search the `root` folder.
+
+    Args:
+        root (str): The root folder to traverse.
+
+    Yeilds:
+        pathlib.Path: The traversed path.
+    """
     queue = [pathlib.Path(root)]
     while queue:
         path = queue.pop(0)

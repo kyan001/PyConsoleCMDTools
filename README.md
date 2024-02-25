@@ -80,6 +80,32 @@ hello
 >>> cct.is_cmd_exist("ls")  # Test if a command is exist.
 True
 
+>>> cct.install_package("git")  # Install a package.
+True
+
+>>> cct.install_package(name="ping3", manager="pip3")  # Install a package using a different package manager.
+True
+
+>>> cct.install_package({
+    "Windows": "pypy",
+    "Darwin": "python",
+    "Linux": "python3"
+})  # Install a package using different package names for different OS.
+True
+
+>>> cct.install_package({
+    "Linux": "python3",
+    "*": "python"
+})  # Install a package using different package names for different OS with a default one.
+True
+
+>>> cct.install_package("git", manager={
+    "Windows": "choco",
+    "Darwin": "port",
+    "Linux": "snap",
+    "*": "npm"
+})  # Install a package using different package managers for different OS with a default one.
+
 >>> cct.get_path("./file.txt")  # Get the absolute path.
 Path('/path/to/file.txt')  # Path Object which is a subclass of str.
 

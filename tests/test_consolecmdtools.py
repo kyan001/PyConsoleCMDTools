@@ -143,6 +143,41 @@ class test_consolecmdtools(unittest.TestCase):
             self.assertFalse(cct.is_cmd_exist("notexist"))
             self.assertTrue(cct.is_cmd_exist("ls"))
 
+    def test_install_package_name_str(self):
+        result = cct.install_package("_fake_package_name")
+        self.assertIn("_fake_package_name", self.fakeout.readline())
+        self.assertTrue(result)
+
+    def test_install_package_name_dict(self):
+        result = cct.install_package({"Windows": "_fake_package_name", "Darwin": "_fake_package_name", "Linux": "_fake_package_name"})
+        self.assertIn("_fake_package_name", self.fakeout.readline())
+        self.assertTrue(result)
+
+    def test_install_package_name_wildcard(self):
+        result = cct.install_package({"*": "_fake_package_name"})
+        self.assertIn("_fake_package_name", self.fakeout.readline())
+        self.assertTrue(result)
+
+    def test_install_package_manager_str(self):
+        result = cct.install_package("_fake_package_name", manager="pip3")
+        self.assertIn("pip3", self.fakeout.readline())
+        self.assertTrue(result)
+
+    def test_install_package_manager_notexist(self):
+        result = cct.install_package("_fake_package_name", manager="_fake_manager_name")
+        self.assertIn("Unsupported", self.fakeout.readline())
+        self.assertFalse(result)
+
+    def test_install_package_manager_dict(self):
+        result = cct.install_package("_fake_package_name", manager={"Windows": "_fake_manager_name", "Darwin": "_fake_manager_name", "Linux": "_fake_manager_name"})
+        self.assertIn("_fake_manager_name", self.fakeout.readline())
+        self.assertFalse(result)
+
+    def test_install_package_manager_wildcard(self):
+        result = cct.install_package("_fake_package_name", manager={"*": "_fake_manager_name"})
+        self.assertIn("_fake_manager_name", self.fakeout.readline())
+        self.assertFalse(result)
+
     def test_get_path_file(self):
         file_path = cct.get_path(__file__)
         self.assertTrue(file_path.endswith("test_consolecmdtools.py"))
