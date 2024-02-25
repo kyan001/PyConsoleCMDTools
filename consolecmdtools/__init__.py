@@ -191,39 +191,42 @@ def install_package(name: typing.Union[str, dict], manager: typing.Union[str, di
     Returns:
         bool: Does this command run successfully
     """
+    def extract_package_info(data: typing.Union[str, dict], title: str) -> str:
+        """Extract package info from input data
+
+        Args:
+            data (str|dict): The package data or a dict of package datas for different platforms.
+            title (str): The title of the data, such as "package name" or "package manager".
+
+        Returns:
+            str: The package name or package manager name.
+        """
+        if isinstance(data, dict):
+            result = data.get(platform.system())
+            if result:
+                return result
+            cit.warn(f"No {title} found for {platform.system()}")
+            result = data.get("*")
+            if result:
+                cit.warn(f"Using default {title}: {result}")
+                return result
+            cit.err(f"No default {title} found!")
+            cit.info(f"Supported {title} platforms: {data.keys()}")
+            return False
+        elif isinstance(data, str):
+            return data
+        else:
+            cit.err(f"Unsupported type of {title} data: {type(data)}")
+            return False
+
     # check inputs
     if not name:
         cit.err("No package name provided!")
         return False
     cit.info(f"Platform: {platform.system()}")
-    # Get package manager
-    if isinstance(manager, dict):
-        manager_name = manager.get(platform.system())
-        if not manager_name:
-            manager_name = manager.get("*")
-            cit.info(f"Supported package platforms: {manager.keys()}")
-            if manager_name:
-                cit.warn(f"No package manager found for {platform.system()}! Using default manager: {manager_name}")
-            else:
-                cit.err(f"No package manager found for {platform.system()}!")
-                cit.info(f"Supported package platforms: {manager.keys()}")
-                return False
-
-        if not manager_name:
-            cit.info(f"Supported package platforms: {manager.keys()}")
-            return False
-    else:  # isinstance(manager, str)
-        manager_name = manager
+    manager_name = extract_package_info(manager, "package manager")
     cit.info(f"Package Manager: {manager_name}")
-    # Get package name
-    if isinstance(name, dict):
-        package_name = name.get(platform.system())
-        if not package_name:
-            cit.err(f"No package name found for {platform.system()}!")
-            cit.info(f"Supported package platforms: {name.keys()}")
-            return False
-    else:  # isinstance(name, str)
-        package_name = name
+    package_name = extract_package_info(name, "package name")
     cit.info(f"Package Name: {package_name}")
     # Install package
     available_managers = {
