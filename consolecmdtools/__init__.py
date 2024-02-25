@@ -230,25 +230,41 @@ def install_package(name: typing.Union[str, dict], manager: typing.Union[str, di
     cit.info(f"Package Name: {package_name}")
     # Install package
     available_managers = {
-        "scoop": {
+        "scoop": {  # Scoop (Windows)
             "command": "scoop",
             "commandline": "scoop install {}",
         },
-        "apt": {
-            "command": "apt",
-            "commandline": "sudo apt install {}",
+        "choco": {  # Chocolatey (Windows)
+            "command": "choco",
+            "commandline": "choco install {}",
         },
-        "brew": {
+        "brew": {  # Homebrew (macOS)
             "command": "brew",
             "commandline": "brew install {}",
         },
-        "pip": {
+        "port": {  # MacPorts (macOS)
+            "command": "port",
+            "commandline": "sudo port install {}",
+        },
+        "apt": {  # APT (Debian/Ubuntu)
+            "command": "apt",
+            "commandline": "sudo apt install {}",
+        },
+        "snap": {  # Snap (Ubuntu)
+            "command": "snap",
+            "commandline": "sudo snap install {}",
+        },
+        "pip": {  # pip (Python)
             "command": "pip",
             "commandline": "pip install --user {}",
         },
-        "pip3": {
+        "pip3": {  # pip3 (Python3)
             "command": "pip3",
             "commandline": "pip3 install --user {}",
+        },
+        "npm": {  # npm (Node.js)
+            "command": "npm",
+            "commandline": "npm install -g {}",
         },
     }
     current_manager = available_managers.get(manager_name)
