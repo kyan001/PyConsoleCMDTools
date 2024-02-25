@@ -182,6 +182,10 @@ class test_consolecmdtools(unittest.TestCase):
         file_path = cct.get_path(__file__)
         self.assertTrue(file_path.endswith("test_consolecmdtools.py"))
 
+    def test_get_path_file_abs(self):
+        file_abs = cct.get_path(__file__).abs
+        self.assertEqual(file_abs, os.path.abspath(__file__))
+
     def test_get_path_file_basename(self):
         file_basename = cct.get_path(__file__).basename
         self.assertEqual(file_basename, "test_consolecmdtools.py")
@@ -209,6 +213,10 @@ class test_consolecmdtools(unittest.TestCase):
     def test_get_path_parent_stem(self):
         parent_stem = cct.get_path(__file__).parent.stem
         self.assertEqual(parent_stem, "tests")
+
+    def test_get_path_exists(self):
+        path = cct.get_path(__file__)
+        self.assertTrue(path.exists)
 
     def test_diff_same(self):
         diffs = cct.diff("test", "test")
@@ -287,6 +295,28 @@ class test_consolecmdtools(unittest.TestCase):
         content = cct.read_file(filepath)
         self.assertEqual(content, "This file should not changed\n")
 
+    def test_copy_file(self):
+        with tempfile.TemporaryDirectory() as tmpd:
+            with tempfile.NamedTemporaryFile(dir=tmpd, delete=False) as fsrc, tempfile.NamedTemporaryFile(dir=tmpd) as fdst:
+                src = fsrc.name
+                dst = fdst.name
+            self.assertTrue(os.path.exists(src))
+            self.assertFalse(os.path.exists(dst))
+            cct.copy_file(src, dst)
+            self.assertTrue(os.path.exists(src))
+            self.assertTrue(os.path.exists(dst))
+
+    def test_copy_file_copy_false(self):
+        with tempfile.TemporaryDirectory() as tmpd:
+            with tempfile.NamedTemporaryFile(dir=tmpd, delete=False) as fsrc, tempfile.NamedTemporaryFile(dir=tmpd) as fdst:
+                src = fsrc.name
+                dst = fdst.name
+            self.assertTrue(os.path.exists(src))
+            self.assertFalse(os.path.exists(dst))
+            cct.copy_file(src, dst, copy=False)  # copy should be ignored
+            self.assertTrue(os.path.exists(src))
+            self.assertTrue(os.path.exists(dst))
+
     def test_move_file_move(self):
         with tempfile.TemporaryDirectory() as tmpd:
             with tempfile.NamedTemporaryFile(dir=tmpd, delete=False) as fsrc, tempfile.NamedTemporaryFile(dir=tmpd) as fdst:  # dst is deleted after creation
@@ -346,6 +376,15 @@ class test_consolecmdtools(unittest.TestCase):
             self.assertTrue(os.path.exists(dst))
             self.assertIn(src, self.fakeout.readline())
             self.assertIn(dst, self.fakeout.readline())
+
+    def test_move_file_ensure(self):
+        with tempfile.TemporaryDirectory() as tmpd:
+            with tempfile.NamedTemporaryFile(dir=tmpd, delete=False) as fsrc:
+                src = fsrc.name
+                dst = os.path.join(tmpd, "dst_folder", "dst_file")
+            self.assertFalse(os.path.exists(dst))
+            cct.move_file(src, dst, ensure=True)
+            self.assertTrue(os.path.exists(dst))
 
     @unittest.skipIf(OFFLINE_MODE, 'Offline mode')
     def test_ajax_get(self):

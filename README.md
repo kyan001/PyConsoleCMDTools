@@ -226,7 +226,11 @@ False  # if already up-to-date.
 
 >>> cct.move_file("/path/to/src", "/path/to/dst", backup=True)  # Backup dst file before move or copy.
 
+>>> cct.move_file("/path/to/src", "/path/to/dst", ensure=True)  # Ensure the dst dir exists before move or copy.
+
 >>> cct.move_file("/path/to/src", "/path/to/dst", msgout=print)  # Use `print` to handle output logs.
+
+>>> cct.copy_file("/path/to/src", "/path/to/dst")  # Copy file from src to dst. Same as `move_file(src, dst, copy=True)`.
 
 >>> cct.ajax('http://ajax-url')  # Start a AJAX request.
 {'result': 'data'}  # As python dict.

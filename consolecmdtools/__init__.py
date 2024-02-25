@@ -14,7 +14,7 @@ import consoleiotools as cit
 from .path import Path
 
 
-__version__ = '6.2.0'
+__version__ = '6.3.0'
 
 
 def banner(text: str) -> str:
@@ -36,7 +36,7 @@ def md5(target: any, force_text: bool = False) -> str:
         with open(target, 'rb') as f:
             content = f.read().replace(os.linesep.encode(), b"\n")  # universal newline
             return hashlib.md5(content).hexdigest()
-    if type(target) != bytes:  # the input of hashlib.md5() should be type of bytes
+    if not isinstance(target, bytes):  # the input of hashlib.md5() should be type of bytes
         target = str(target).encode()
     return hashlib.md5(target).hexdigest()
 
@@ -51,7 +51,7 @@ def crc32(target: any, force_text: bool = False) -> int:
         with open(target, 'rb') as f:
             content = f.read().replace(os.linesep.encode(), b"\n")  # universal newline
             return binascii.crc32(content)
-    if type(target) != bytes:  # if target is str/int/float, the input of binascii.crc32() should be type of bytes
+    if not isinstance(target, bytes):  # if target is str/int/float, the input of binascii.crc32() should be type of bytes
         target = str(target).encode()
     return binascii.crc32(target)
 
@@ -93,7 +93,7 @@ def main_color(source: str, scale: int = 200, triplet: str = "rgb", is_url: bool
         "coef": 0
     }
     for count, (r, g, b, a) in img.getcolors(img.size[0] * img.size[1]):  # get each color used in image with its count, maxcolors = the size of the image.
-        h, s, v = colorsys.rgb_to_hsv(r / 255, g / 255, b / 255)
+        _h, s, _v = colorsys.rgb_to_hsv(r / 255, g / 255, b / 255)
         saturation = s * 255  # extend the range from 0~1 to 0~255
         coefficient = (saturation * count * a) or 0.01  # get how important this color is. Should not be 0.
         statistics["r"] += coefficient * r  # raise the importance of red of this image.
@@ -157,9 +157,9 @@ def read_cmd(cmd: str) -> str:
     """
     import subprocess
 
-    cit.echo(cmd, pre="command")
+    cit.echo(cmd, pre="_command")
     proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True, text=True)  # text=True for str output, shell=True for run cmd directly in shell instead of run cmd.exe
-    (proc_stdout, proc_stderr) = proc.communicate(input=None)  # proc_stdin
+    (proc_stdout, _proc_stderr) = proc.communicate(input=None)  # proc_stdin
     return proc_stdout  # also proc.returncode, proc_stderr
 
 
@@ -527,7 +527,20 @@ def read_url(source) -> bytes:
     return response.read() if response else None
 
 
-def move_file(src: str, dst: str, copy: bool = False, backup: bool = False, msgout: callable = None):
+def copy_file(*args, **kwargs) -> str:
+    """Copy file from one place to another.
+
+    Args:
+        *args, **kwargs: All the arguments and keyword arguments will be passed to `move_file` function, except `copy` is set to `True`. Copying when moving is logical, moving when copying is not.
+
+    Returns:
+        Returns whatever `move_file` returns.
+    """
+    kwargs['copy'] = True  # Override the `copy` argument to `True`
+    return move_file(*args, **kwargs)
+
+
+def move_file(src: str, dst: str, copy: bool = False, backup: bool = False, ensure: bool = False, msgout: callable = None) -> str:
     """Move or copy file from one place to another.
 
     Args:
@@ -535,7 +548,11 @@ def move_file(src: str, dst: str, copy: bool = False, backup: bool = False, msgo
         dst (str): Destination file path.
         copy (bool): Copy or move source file to destination.
         backup (bool): Backup destination file or not. `True` means try to backup destination file, pass if destination file does not exist.
+        ensure (bool): Ensure the destination file exists or not. `True` means ensure the destination file exists, pass if destination file already exists.
         msgout (callable): Output function to handle the outputs. `None` means no outputs.
+
+    Returns:
+        str: The destination file path.
     """
     import time
     import shutil
@@ -549,8 +566,14 @@ def move_file(src: str, dst: str, copy: bool = False, backup: bool = False, msgo
         _msg("Copy Enabled.")
     if backup:
         _msg("Backup Enabled.")
+    if ensure:
+        _msg("Ensure Enabled.")
     if not os.path.exists(src):
-        raise FileNotFoundError(f"Source file does not exist.")
+        raise FileNotFoundError("Source file does not exist.")
+    if ensure:
+        if not os.path.exists(os.path.dirname(dst)):
+            os.makedirs(os.path.dirname(dst), exist_ok=True)
+            _msg(f"Destination file parent directory created: {os.path.dirname(dst)}")
     if os.path.exists(dst):
         if backup:
             dst_backup = f"{ dst}.backup.{time.strftime('%Y%m%d%H%M%S')}"
@@ -562,9 +585,9 @@ def move_file(src: str, dst: str, copy: bool = False, backup: bool = False, msgo
         if backup:
             _msg("Warning: Destination file does not exist, backup skipped.")
     if copy:
-        shutil.copy2(src, dst)
+        return shutil.copy2(src, dst)
     else:
-        shutil.move(src, dst)
+        return shutil.move(src, dst)
     _msg(f"File {src} {'copied' if copy else 'moved'} to {dst}.")
 
 
@@ -593,7 +616,7 @@ def ajax(url: str, param: dict = {}, method: str = "get"):
         rsp_str = rsp_bytes.decode("utf-8")
         try:
             return json.loads(rsp_str)
-        except json.decoder.JSONDecodeError as e:
+        except json.decoder.JSONDecodeError:
             return rsp_str
     return None
 

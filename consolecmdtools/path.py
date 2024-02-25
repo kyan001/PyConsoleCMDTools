@@ -5,15 +5,17 @@ class Path(str):
     """A class that represents a path. It is a subclass of str, so it can be used as a string.
 
     Attributes:
-        path: The path as a string.
-        abs: The absolute path as a string.
-        basename: The basename of the path.
-        ext: The extension of the path.
-        stem: The stem of the path.
-        parent: The parent directory of the path. Also a Path object.
+        path (str): The path as a string.
+        abs (Path): The absolute path as a string. Also a Path object.
+        basename (str): The basename of the path.
+        ext (str): The extension of the path.
+        stem (str): The stem of the path.
+        parent (Path): The parent directory of the path. Also a Path object.
+        exists (bool): True if the path exists, False otherwise.
 
     Examples:
-        filepath: '/path/to/filename.txt'
+        filepath: './filename.txt'
+        abs: '/path/to/filename.txt'
         basename: 'filename.txt'
         ext: 'txt'
         stem: 'filename'
@@ -33,16 +35,20 @@ class Path(str):
         |          |          |     |
         +----------+----------+-----+
     """
+
     def __init__(self, path: str):
         super().__init__()
         self.path = path
-        self.abs = os.path.abspath(path)
 
     def __str__(self) -> str:
         return self.abs
 
     def __repr__(self) -> str:
         return f"Path({self.path!r})"
+
+    @property
+    def abs(self) -> str:
+        return Path(os.path.abspath(self.path))
 
     @property
     def parent(self) -> 'Path':
@@ -60,3 +66,7 @@ class Path(str):
     @property
     def stem(self) -> str:
         return os.path.splitext(self.basename)[0]
+
+    @property
+    def exists(self) -> bool:
+        return os.path.exists(self.abs)
