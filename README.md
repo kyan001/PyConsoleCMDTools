@@ -75,7 +75,16 @@ hello
 `
 
 >>> cct.read_cmd("echo hello")  # Run a command and return the output.
+| (_command) echo hello
 'hello\n'
+
+>>> cct.read_cmd("echo hello", verbose=False)  # Run a command and return the output without verbose.
+'hello\n'
+
+>>> cct.read_cmd("notexist")  # If the command failed, a warning message echoed.
+| (_command) echo hello
+| (Warn) Command Failed:
+'Error Messages'
 
 >>> cct.is_cmd_exist("ls")  # Test if a command is exist.
 True

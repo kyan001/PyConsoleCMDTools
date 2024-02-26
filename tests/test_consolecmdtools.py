@@ -138,6 +138,16 @@ class test_consolecmdtools(unittest.TestCase):
     def test_read_cmd(self):
         self.assertEqual(cct.read_cmd("echo Test Text").strip(), "Test Text")
 
+    def test_read_cmd_verbose(self):
+        cct.read_cmd("echo Test Text", verbose=True)
+        self.assertIn("echo Test Text", self.fakeout.readline())
+        cct.read_cmd("echo Test Text", verbose=False)
+        self.assertEqual(self.fakeout.readline(), None)
+
+    def test_read_cmd_error(self):
+        cct.read_cmd("notexist")
+        self.assertIn("notexist", self.fakeout.readline())
+
     def test_is_cmd_exist(self):
         with patch("os.system", new=self.os_system):
             self.assertFalse(cct.is_cmd_exist("notexist"))
@@ -185,6 +195,11 @@ class test_consolecmdtools(unittest.TestCase):
     def test_get_path_file_abs(self):
         file_abs = cct.get_path(__file__).abs
         self.assertEqual(file_abs, os.path.abspath(__file__))
+
+    def test_get_path_file_abs_expanduser(self):
+        file_abs = cct.get_path("~/.file").abs
+        self.assertTrue(os.path.isabs(file_abs))
+        self.assertFalse("~" in file_abs)
 
     def test_get_path_file_basename(self):
         file_basename = cct.get_path(__file__).basename

@@ -48,7 +48,11 @@ class Path(str):
 
     @property
     def abs(self) -> str:
-        return Path(os.path.abspath(self.path))
+        path = self.path
+        path = os.path.expanduser(path)
+        path = os.path.expandvars(path)
+        path = os.path.abspath(path)
+        return Path(path)
 
     @property
     def parent(self) -> 'Path':

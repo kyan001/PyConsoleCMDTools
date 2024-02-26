@@ -14,7 +14,7 @@ import consoleiotools as cit
 from .path import Path
 
 
-__version__ = '6.3.0'
+__version__ = '6.3.2'
 
 
 def banner(text: str) -> str:
@@ -147,7 +147,7 @@ def run_cmd(cmd: str) -> bool:
     return is_success
 
 
-def read_cmd(cmd: str) -> str:
+def read_cmd(cmd: str, verbose: bool = True) -> str:
     """Run command and return command's output
 
     Args:
@@ -157,10 +157,14 @@ def read_cmd(cmd: str) -> str:
     """
     import subprocess
 
-    cit.echo(cmd, pre="_command")
+    if verbose:
+        cit.echo(cmd, pre="_command")
     proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True, text=True)  # text=True for str output, shell=True for run cmd directly in shell instead of run cmd.exe
-    (proc_stdout, _proc_stderr) = proc.communicate(input=None)  # proc_stdin
-    return proc_stdout  # also proc.returncode, proc_stderr
+    (proc_stdout, proc_stderr) = proc.communicate(input=None)  # proc_stdin
+    if proc.returncode and proc_stderr and verbose:
+        cit.warn("Command Failed:")
+        cit.print(proc_stderr)
+    return proc_stdout  # or proc.returncode
 
 
 def is_cmd_exist(cmd: str) -> bool:
