@@ -14,7 +14,7 @@ import consoleiotools as cit
 from .path import Path
 
 
-__version__ = '6.3.2'
+__version__ = '6.3.3'
 
 
 def banner(text: str) -> str:
@@ -450,9 +450,10 @@ def diff(a, b, meta: bool = False, force_str: bool = False, context: int = 0) ->
     src, dst = {'raw': a}, {'raw': b}
     for d in (src, dst):
         if isinstance(d['raw'], str):
-            if (not force_str) and os.path.isfile(d['raw']):
-                d['label'] = os.path.basename(d['raw'])  # filename will show in header of diffs
-                with open(d['raw'], encoding='utf-8') as f:
+            as_path = get_path(d['raw'])
+            if (not force_str) and as_path.exists:
+                d['label'] = as_path.basename  # filename will show in header of diffs
+                with open(as_path, encoding='utf-8') as f:
                     d['content'] = f.readlines()
             else:
                 d['label'] = str(str)
