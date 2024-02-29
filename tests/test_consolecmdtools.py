@@ -233,6 +233,16 @@ class test_consolecmdtools(unittest.TestCase):
         path = cct.get_path(__file__)
         self.assertTrue(path.exists)
 
+    def test_get_path_is_dir(self):
+        path = cct.get_path(__file__)
+        self.assertFalse(path.is_dir)
+        self.assertTrue(path.parent.is_dir)
+
+    def test_get_path_is_file(self):
+        path = cct.get_path(__file__)
+        self.assertTrue(path.is_file)
+        self.assertFalse(path.parent.is_file)
+
     def test_diff_same(self):
         diffs = cct.diff("test", "test")
         self.assertFalse(diffs)

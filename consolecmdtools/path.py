@@ -6,12 +6,14 @@ class Path(str):
 
     Attributes:
         path (str): The path as a string.
-        abs (Path): The absolute path as a string. Also a Path object.
+        abs (str): The absolute path as a string.
         basename (str): The basename of the path.
         ext (str): The extension of the path.
         stem (str): The stem of the path.
         parent (Path): The parent directory of the path. Also a Path object.
         exists (bool): True if the path exists, False otherwise.
+        is_dir (bool): True if the path is a directory, False otherwise.
+        is_file (bool): True if the path is a file, False otherwise.
 
     Examples:
         filepath: './filename.txt'
@@ -77,3 +79,13 @@ class Path(str):
     def exists(self) -> bool:
         """Returns whether the path exists."""
         return os.path.exists(self.abs)
+
+    @property
+    def is_dir(self) -> bool:
+        """Returns whether the path is a directory."""
+        return os.path.isdir(self.abs)
+
+    @property
+    def is_file(self) -> bool:
+        """Returns whether the path is a file."""
+        return os.path.isfile(self.abs)

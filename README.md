@@ -129,6 +129,12 @@ Path('/path/to/file.txt')  # Path Object which is a subclass of str.
 >>> cct.get_path("./file.txt").exists  # Test if the path exists.
 True
 
+>>> cct.get_path("./file.txt").is_file  # Test if the path is a file.
+True
+
+>>> cct.get_path("./file.txt").is_dir  # Test if the path is a dir.
+False
+
 >>> cct.get_path("/path/to/file.txt").basename  # Get the basename of the file or dir.
 'file.txt'
 
