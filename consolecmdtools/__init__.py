@@ -14,7 +14,7 @@ import consoleiotools as cit
 from .path import Path
 
 
-__version__ = '6.3.4'
+__version__ = '6.4.0'
 
 
 def banner(text: str) -> str:
@@ -329,11 +329,11 @@ def bfs_walk(root: str) -> typing.Generator[pathlib.Path, None, None]:
     Yeilds:
         pathlib.Path: The traversed path.
     """
-    queue = [pathlib.Path(root)]
+    queue = [pathlib.Path(os.path.expanduser(root))]  # ensure `~` is expanded
     while queue:
         path = queue.pop(0)
         yield path
-        if path.is_dir():
+        if path.is_dir():  # path included `~` returns False
             queue = [p for p in path.iterdir()] + queue  # insert into the front of the queue
 
 
