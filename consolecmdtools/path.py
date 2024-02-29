@@ -52,7 +52,7 @@ class Path(str):
         path = os.path.expanduser(path)
         path = os.path.expandvars(path)
         path = os.path.abspath(path)
-        return Path(path)
+        return path
 
     @property
     def parent(self) -> 'Path':
@@ -60,6 +60,7 @@ class Path(str):
 
     @property
     def basename(self) -> str:
+        """Returns the basename of the path."""
         return os.path.basename(self.abs)
 
     @property
@@ -69,8 +70,10 @@ class Path(str):
 
     @property
     def stem(self) -> str:
+        """Returns the basename of the path but without the extension and the dot."""
         return os.path.splitext(self.basename)[0]
 
     @property
     def exists(self) -> bool:
+        """Returns whether the path exists."""
         return os.path.exists(self.abs)
