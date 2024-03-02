@@ -17,16 +17,11 @@ classifiers = [
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3 :: Only",
 ]
-dependencies = ["consoleiotools"]
-dynamic = ["version"]
+dynamic = ["version", "dependencies", "optional-dependencies"]
 
 [[project.authors]]
 name = "Kyan"
 email = "kai@kyan001.com"
-
-[project.optional-dependencies]
-opt = ["pillow"]
-dev = ["build", "wheel", "pycodestyle"]
 
 [project.urls]
 Homepage = "https://github.com/kyan001/PyConsoleCMDTools"
@@ -38,6 +33,8 @@ py-modules = ["consolecmdtools"]
 
 [tool.setuptools.dynamic]
 version = {attr = "consolecmdtools.__version__"}
+dependencies = {file = ["requirements.txt"]}
+optional-dependencies = {opt = {file = ["requirements-opt.txt"]}, dev = {file = ["requirements-dev.txt"]}}
 
 [tool.setuptools.packages.find]
 exclude = ["contrib", "docs", "tests"]
