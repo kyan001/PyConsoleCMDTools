@@ -549,7 +549,7 @@ def copy_file(*args, **kwargs) -> str:
     return move_file(*args, **kwargs)
 
 
-def move_file(src: str, dst: str, copy: bool = False, backup: bool = False, ensure: bool = False, msgout: callable = None) -> str:
+def move_file(src: str, dst: str, copy: bool = False, backup: bool = False, ensure: bool = False, msgout: typing.Callable | None = None) -> str:
     """Move or copy file from one place to another.
 
     Args:
