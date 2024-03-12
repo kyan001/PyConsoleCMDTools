@@ -3,6 +3,7 @@ import os
 import sys
 import platform
 import urllib.request
+import urllib.parse
 import json
 import io
 import pathlib
@@ -14,7 +15,7 @@ import consoleiotools as cit
 from .path import Path
 
 
-__version__ = '6.4.0'
+__version__ = '6.4.1'
 
 
 def banner(text: str) -> str:
@@ -26,12 +27,12 @@ def banner(text: str) -> str:
     return "\n".join([top_line, middle_line, bottom_line])
 
 
-def md5(target: any, force_text: bool = False) -> str:
+def md5(target: str | bytes, force_text: bool = False) -> str:
     """Generate MD5 hash for bytes, str, int, file, etc."""
     import hashlib
 
     if not target:
-        return None
+        return ""
     if not force_text and os.path.isfile(target):  # if target is a file
         with open(target, 'rb') as f:
             content = f.read().replace(os.linesep.encode(), b"\n")  # universal newline
@@ -41,7 +42,7 @@ def md5(target: any, force_text: bool = False) -> str:
     return hashlib.md5(target).hexdigest()
 
 
-def crc32(target: any, force_text: bool = False) -> int:
+def crc32(target: str | bytes, force_text: bool = False) -> int:
     """Generate CRC32 hash for bytes, str, int, file, etc."""
     import binascii
 
@@ -56,7 +57,7 @@ def crc32(target: any, force_text: bool = False) -> int:
     return binascii.crc32(target)
 
 
-def main_color(source: str, scale: int = 200, triplet: str = "rgb", is_url: bool = False) -> str:
+def main_color(source: str, scale: int = 200, triplet: str = "rgb", is_url: bool = False) -> str | tuple[int, int, int] | None:
     """Get a representative color from the source-pointed image
 
     Imports:
@@ -86,7 +87,7 @@ def main_color(source: str, scale: int = 200, triplet: str = "rgb", is_url: bool
     else:  # source is an image file
         img = Image.open(source).convert("RGBA")
     img.thumbnail((scale, scale))
-    statistics = {
+    statistics: dict = {
         "r": 0,
         "g": 0,
         "b": 0,
@@ -95,7 +96,7 @@ def main_color(source: str, scale: int = 200, triplet: str = "rgb", is_url: bool
     for count, (r, g, b, a) in img.getcolors(img.size[0] * img.size[1]):  # get each color used in image with its count, maxcolors = the size of the image.
         _h, s, _v = colorsys.rgb_to_hsv(r / 255, g / 255, b / 255)
         saturation = s * 255  # extend the range from 0~1 to 0~255
-        coefficient = (saturation * count * a) or 0.01  # get how important this color is. Should not be 0.
+        coefficient: float = (saturation * count * a) or 0.01  # get how important this color is. Should not be 0.
         statistics["r"] += coefficient * r  # raise the importance of red of this image.
         statistics["g"] += coefficient * g
         statistics["b"] += coefficient * b
@@ -185,7 +186,7 @@ def is_cmd_exist(cmd: str) -> bool:
         return (result != "")
 
 
-def install_package(name: typing.Union[str, dict], manager: typing.Union[str, dict] = {"Windows": "scoop", "Linux": "apt", "Darwin": "brew", "*": "pip3"}) -> bool:
+def install_package(name: str | dict, manager: str | dict = {"Windows": "scoop", "Linux": "apt", "Darwin": "brew", "*": "pip3"}) -> bool:
     """Install package using package manager
 
     Args:
@@ -195,7 +196,7 @@ def install_package(name: typing.Union[str, dict], manager: typing.Union[str, di
     Returns:
         bool: Does this command run successfully
     """
-    def extract_package_info(data: typing.Union[str, dict], title: str) -> str:
+    def extract_package_info(data: str | dict, title: str) -> str | None:
         """Extract package info from input data
 
         Args:
@@ -203,7 +204,7 @@ def install_package(name: typing.Union[str, dict], manager: typing.Union[str, di
             title (str): The title of the data, such as "package name" or "package manager".
 
         Returns:
-            str: The package name or package manager name.
+            str or None: The package name or package manager name. Return None if no package name found.
         """
         if isinstance(data, dict):
             result = data.get(platform.system())
@@ -216,12 +217,12 @@ def install_package(name: typing.Union[str, dict], manager: typing.Union[str, di
                 return result
             cit.err(f"No default {title} found!")
             cit.info(f"Supported {title} platforms: {data.keys()}")
-            return False
+            return None
         elif isinstance(data, str):
             return data
         else:
             cit.err(f"Unsupported type of {title} data: {type(data)}")
-            return False
+            return None
 
     # check inputs
     if not name:
@@ -271,7 +272,8 @@ def install_package(name: typing.Union[str, dict], manager: typing.Union[str, di
             "commandline": "npm install -g {}",
         },
     }
-    current_manager = available_managers.get(manager_name)
+    if manager_name:
+        current_manager = available_managers.get(manager_name)
     if not current_manager:
         cit.err(f"Unsupported package manager: {manager_name}!")
         return False
@@ -337,7 +339,7 @@ def bfs_walk(root: str) -> typing.Generator[pathlib.Path, None, None]:
             queue = [p for p in path.iterdir()] + queue  # insert into the front of the queue
 
 
-def get_paths(root: str, filter: callable = None) -> list:
+def get_paths(root: str, filter: typing.Callable | None = None) -> list:
     """List folders and files under `root` folder with filter.
 
     Args:
@@ -355,12 +357,11 @@ def get_paths(root: str, filter: callable = None) -> list:
 
 
 @cit.deprecated_by(get_paths)
-def get_files(root: str, filter: callable = None) -> list:
+def get_files(root: str, filter: typing.Callable | None = None):
     pass
 
 
-
-def ls_tree(root: str, show_icon: bool = True, ascii: bool = False, to_visible: callable = lambda path: True, to_highlight: callable = lambda path: False, add_suffix: callable = None):
+def ls_tree(root: str, show_icon: bool = True, ascii: bool = False, to_visible: typing.Callable | None = lambda path: True, to_highlight: typing.Callable | None = lambda path: False, add_suffix: typing.Callable | None = None):
     """Print folders and files under `root` folder in tree structure.
 
     Args:
@@ -482,6 +483,9 @@ def update_file(filename: str, url: str) -> bool:
         return False
     try:
         raw_codes = read_url(url)
+        if not raw_codes:
+            cit.err("Failed to get remote file content.")
+            return False
         with open(filename, "rb") as f:
             current_codes = f.read().replace(b"\r", b"")
         is_same, diff = compare(current_codes, raw_codes)
@@ -529,7 +533,7 @@ def read_url(source) -> bytes:
         bytes: The content of the request's response.
     """
     response = urllib.request.urlopen(source)
-    return response.read() if response else None
+    return response.read() if response else b""
 
 
 def copy_file(*args, **kwargs) -> str:
@@ -608,12 +612,12 @@ def ajax(url: str, param: dict = {}, method: str = "get"):
     """
     if method.lower() == "get":
         if param:
-            param = urllib.parse.urlencode(param)
-            url += "?" + param
+            param_enc = urllib.parse.urlencode(param)
+            url += "?" + param_enc
         req = urllib.request.Request(url)
     elif method.lower() == "post":
-        param = json.dumps(param).encode("utf-8")
-        req = urllib.request.Request(url, data=param)
+        param_enc = json.dumps(param).encode("utf-8")
+        req = urllib.request.Request(url, data=param_enc)
     else:
         raise Exception("invalid method '{}' (GET/POST)".format(method))
     rsp_bytes = read_url(req)
@@ -631,13 +635,12 @@ def is_python3() -> bool:
     return sys.version_info[0] == 3
 
 
-def is_admin() -> bool:
+def is_admin() -> bool | None:
     """Check does the script has admin privileges."""
     import ctypes
-    try:
+    if platform.system() == "Windows":  # Windows only
         return ctypes.windll.shell32.IsUserAnAdmin()
-    except AttributeError:  # Windows only
-        return None
+    return None
 
 
 def runas_admin(py_file: str) -> bool:
@@ -648,10 +651,13 @@ def runas_admin(py_file: str) -> bool:
 
     Args:
         py_file (str): The command line arguments passed to python. It should be the script path, such as `__file__`.
+
     Returns:
         bool: Command run success.
     """
     import ctypes
+    if not platform.system() == 'Windows':
+        return False
     parent_window_handle = None  # no UI
     operation = "runas"  # run as admin
     executor = sys.executable  # python.exe
