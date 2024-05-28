@@ -15,7 +15,7 @@ import consoleiotools as cit
 from .path import Path
 
 
-__version__ = '6.4.1'
+__version__ = '6.4.2'
 
 
 def banner(text: str) -> str:
@@ -385,15 +385,13 @@ def ls_tree(root: str, show_icon: bool = True, ascii: bool = False, to_visible: 
                     return True
         return False
 
+    cit_ascii, cit.__ascii__  = cit.__ascii__, ascii
     for path in bfs_walk(root):
         # construct text
         path_text = path.name
         # add prefix
-        depth = len(path.relative_to(root).parts)
+        level = len(path.relative_to(root).parts)
         icon = " " if not show_icon else ("📁" if path.is_dir() else "📄")
-        indent_char = f"[dim]{'|' if ascii else '│'}[/]   "
-        dash_char = f"{'|--' if ascii else '├──'}{icon}"
-        prefix = (indent_char * (depth - 1) + dash_char) if depth > 0 else "📂"  # add tree branchs characters
         # add suffix
         suffix = add_suffix(path) if add_suffix else ""
         # style hightlights
@@ -405,10 +403,11 @@ def ls_tree(root: str, show_icon: bool = True, ascii: bool = False, to_visible: 
         # style dirs
         path_text = f"{path_text}{os.sep if path.is_dir() else ''}"  # add "/" or "\" to the end of the folder name
         # assemble
-        full_text = f"{prefix} {path_text} {suffix}"
+        full_text = f"{icon} {path_text} {suffix}"
         # print
         if is_visible(path):  # check if the path is visible, or the path include visible files or folders
-            cit.print(full_text)
+            cit.echo(full_text, indent=level, bar="")
+    cit.__ascii__ = cit_ascii
 
 
 def show_in_file_manager(path: str, ask: bool = False):
