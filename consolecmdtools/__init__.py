@@ -15,7 +15,7 @@ import consoleiotools as cit
 from .path import Path
 
 
-__version__ = '6.4.2'
+__version__ = '6.5.0'
 
 
 def banner(text: str) -> str:
@@ -266,6 +266,10 @@ def install_package(name: str | dict, manager: str | dict = {"Windows": "scoop",
         "pip3": {  # pip3 (Python3)
             "command": "pip3",
             "commandline": "pip3 install --user {}",
+        },
+        "pipx": {  # pipx (Python)
+            "command": "pipx",
+            "commandline": "pipx install {}",
         },
         "npm": {  # npm (Node.js)
             "command": "npm",

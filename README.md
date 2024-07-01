@@ -92,7 +92,7 @@ True
 >>> cct.install_package("git")  # Install a package.
 True
 
->>> cct.install_package(name="ping3", manager="pip3")  # Install a package using a different package manager.
+>>> cct.install_package(name="ping3", manager="pip3")  # Install a package using a different package manager. Options: scoop, choco, brew, port, apt, snap, pip, pip3, pipx.
 True
 
 >>> cct.install_package({
