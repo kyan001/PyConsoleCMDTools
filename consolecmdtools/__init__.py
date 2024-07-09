@@ -15,7 +15,7 @@ import consoleiotools as cit
 from .path import Path
 
 
-__version__ = '6.5.0'
+__version__ = '6.5.1'
 
 
 def banner(text: str) -> str:
@@ -573,20 +573,22 @@ def move_file(src: str, dst: str, copy: bool = False, backup: bool = False, ensu
         if msgout:
             msgout(message)
     _msg(f"Source File: {src}")
+    src = get_path(src)
     _msg(f"Destination File: {dst}")
+    dst = get_path(dst)
     if copy:
         _msg("Copy Enabled.")
     if backup:
         _msg("Backup Enabled.")
     if ensure:
         _msg("Ensure Enabled.")
-    if not os.path.exists(src):
+    if not src.exists:
         raise FileNotFoundError("Source file does not exist.")
     if ensure:
-        if not os.path.exists(os.path.dirname(dst)):
-            os.makedirs(os.path.dirname(dst), exist_ok=True)
-            _msg(f"Destination file parent directory created: {os.path.dirname(dst)}")
-    if os.path.exists(dst):
+        if not dst.parent.exists:
+            os.makedirs(dst.parent, exist_ok=True)
+            _msg(f"Destination file parent directory created: {dst.parent}")
+    if dst.exists:
         if backup:
             dst_backup = f"{ dst}.backup.{time.strftime('%Y%m%d%H%M%S')}"
             shutil.copy2(dst, dst_backup)
@@ -597,10 +599,12 @@ def move_file(src: str, dst: str, copy: bool = False, backup: bool = False, ensu
         if backup:
             _msg("Warning: Destination file does not exist, backup skipped.")
     if copy:
+        _msg(f"File {src} copied to {dst}.")
         return shutil.copy2(src, dst)
     else:
+        _msg(f"File {src} moved to {dst}.")
         return shutil.move(src, dst)
-    _msg(f"File {src} {'copied' if copy else 'moved'} to {dst}.")
+
 
 
 def ajax(url: str, param: dict = {}, method: str = "get"):
