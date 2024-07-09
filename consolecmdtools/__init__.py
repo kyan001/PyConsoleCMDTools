@@ -15,7 +15,7 @@ import consoleiotools as cit
 from .path import Path
 
 
-__version__ = '6.5.1'
+__version__ = '6.5.2'
 
 
 def banner(text: str) -> str:
@@ -177,10 +177,10 @@ def is_cmd_exist(cmd: str) -> bool:
         bool: if the command is exist
     """
     if platform.system() == "Windows":  # Windows
-        result = os.system("where {} >nul 2>&1".format(cmd))
+        result = os.system(f"where {cmd} >nul 2>&1")
         return (result == 0)
     else:  # Linux, Unix, macOS
-        proc = os.popen("command -v {}".format(cmd))
+        proc = os.popen(f"command -v '{cmd}'")
         result = proc.read()
         proc.close()
         return (result != "")

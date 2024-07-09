@@ -1,5 +1,7 @@
 # Change Log
 ## Updates
+* 2024-07-10 v6.5.2:
+    * Bug Fix: `is_cmd_exist()` now return False even the command is a path with `~`.
 * 2024-07-10 v6.5.1:
     * Bug Fix: `move_file()` escape "\" in path automatically.
 * 2024-07-01 v6.5.0:
