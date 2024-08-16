@@ -1,5 +1,7 @@
 # Change Log
 ## Updates
+* 2024-08-17 v6.6.1:
+    * Feature: Add `resolve_value()` to get the value for current platform.
 * 2024-07-10 v6.5.2:
     * Bug Fix: `is_cmd_exist()` now return False even the command is a path with `~`.
 * 2024-07-10 v6.5.1:

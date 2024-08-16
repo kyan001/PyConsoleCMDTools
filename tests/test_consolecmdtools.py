@@ -461,6 +461,18 @@ class test_consolecmdtools(unittest.TestCase):
         cct.ls_tree(root)
         self.assertIn("test_consolecmdtools.py", self.fakeout.readline())
 
+    def test_resolve_value_any(self):
+        self.assertEqual(cct.resolve_value("test"), "test")
+
+    def test_resolve_value_dict(self):
+        data = {
+            "Windows": "test",
+            "Darwin": "test",
+            "*": "test"
+        }
+        self.assertEqual(cct.resolve_value(data), "test")
+
+
 
 if __name__ == '__main__':
     # ONLY_MOVE_FILE = True  # Comment this line to run all tests

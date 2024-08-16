@@ -15,7 +15,7 @@ import consoleiotools as cit
 from .path import Path
 
 
-__version__ = '6.5.2'
+__version__ = '6.6.1'
 
 
 def banner(text: str) -> str:
@@ -186,6 +186,23 @@ def is_cmd_exist(cmd: str) -> bool:
         return (result != "")
 
 
+def resolve_value(data):
+    """Get the value for the current platform from the given input.
+
+    Args:
+        data (Any | dict): The data or a dict for datas for different platforms. The dict key is `platform.system()`, and `*` is for default. E.g. {"Windows": ..., "Darwin": ..., "*": Defaults}
+
+    Returns:
+        Any: The value for the current platform.
+    """
+    if isinstance(data, dict):
+        result = data.get(platform.system())
+        if result is None:  # no value for the current platform
+            result = data.get('*')  # use the default value
+        return result  # return the value even if it's None
+    return data  # return the data if it's not a dict
+
+
 def install_package(name: str | dict, manager: str | dict = {"Windows": "scoop", "Linux": "apt", "Darwin": "brew", "*": "pip3"}) -> bool:
     """Install package using package manager
 
@@ -196,42 +213,14 @@ def install_package(name: str | dict, manager: str | dict = {"Windows": "scoop",
     Returns:
         bool: Does this command run successfully
     """
-    def extract_package_info(data: str | dict, title: str) -> str | None:
-        """Extract package info from input data
-
-        Args:
-            data (str|dict): The package data or a dict of package datas for different platforms.
-            title (str): The title of the data, such as "package name" or "package manager".
-
-        Returns:
-            str or None: The package name or package manager name. Return None if no package name found.
-        """
-        if isinstance(data, dict):
-            result = data.get(platform.system())
-            if result:
-                return result
-            cit.warn(f"No {title} found for {platform.system()}")
-            result = data.get("*")
-            if result:
-                cit.warn(f"Using default {title}: {result}")
-                return result
-            cit.err(f"No default {title} found!")
-            cit.info(f"Supported {title} platforms: {data.keys()}")
-            return None
-        elif isinstance(data, str):
-            return data
-        else:
-            cit.err(f"Unsupported type of {title} data: {type(data)}")
-            return None
-
     # check inputs
     if not name:
         cit.err("No package name provided!")
         return False
     cit.info(f"Platform: {platform.system()}")
-    manager_name = extract_package_info(manager, "package manager")
+    manager_name = resolve_value(manager)
     cit.info(f"Package Manager: {manager_name}")
-    package_name = extract_package_info(name, "package name")
+    package_name = resolve_value(name)
     cit.info(f"Package Name: {package_name}")
     # Install package
     available_managers = {

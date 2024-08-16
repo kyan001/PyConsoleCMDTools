@@ -86,6 +86,12 @@ hello
 | (Warn) Command Failed:
 'Error Messages'
 
+>>> cct.resolve_value(42)  # If the input is not a dict, return itself.
+42
+
+>>> cct.resolve_value({"Windows": "win", "Darwin": "macOS", "*": "Linux"})  # Get the value for current platform. `*` is for default.
+'Linux'
+
 >>> cct.is_cmd_exist("ls")  # Test if a command is exist.
 True
 
