@@ -1,5 +1,7 @@
 # Change Log
 ## Updates
+* 2024-11-30 v6.6.2:
+    * Improvement: `resolve_value()` now support UPPERCASE/lowercase/Titlecase on platform name.
 * 2024-08-17 v6.6.1:
     * Feature: Add `resolve_value()` to get the value for current platform.
 * 2024-07-10 v6.5.2:
