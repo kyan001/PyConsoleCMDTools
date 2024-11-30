@@ -15,7 +15,7 @@ import consoleiotools as cit
 from .path import Path
 
 
-__version__ = '6.6.1'
+__version__ = '6.6.2'
 
 
 def banner(text: str) -> str:
@@ -196,7 +196,7 @@ def resolve_value(data):
         Any: The value for the current platform.
     """
     if isinstance(data, dict):
-        result = data.get(platform.system())
+        result = data.get(platform.system()) or data.get(platform.system().lower()) or data.get(platform.system().upper()) or data.get(platform.system().capitalize())
         if result is None:  # no value for the current platform
             result = data.get('*')  # use the default value
         return result  # return the value even if it's None
