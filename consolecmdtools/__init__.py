@@ -549,7 +549,7 @@ def move_file(src: str, dst: str, copy: bool = False, backup: bool = False, ensu
         dst (str): Destination file path.
         copy (bool): Copy or move source file to destination.
         backup (bool): Backup destination file or not. `True` means try to backup destination file, pass if destination file does not exist.
-        ensure (bool): Ensure the destination file exists or not. `True` means ensure the destination file exists, pass if destination file already exists.
+        ensure (bool): Ensure the destination parent directory exists or not. `True` means create the parent directory if not exists, and ignore if the parent directory exists.
         msgout (callable): Output function to handle the outputs. `None` means no outputs.
 
     Returns:
