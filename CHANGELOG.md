@@ -1,5 +1,7 @@
 # Change Log
 ## Updates
+* 2025-01-17 v6.6.3:
+    * Bug Fix: `is_cmd_exist()` now only checks the base command without the args.
 * 2024-11-30 v6.6.2:
     * Improvement: `resolve_value()` now support UPPERCASE/lowercase/Titlecase on platform name.
 * 2024-08-17 v6.6.1:

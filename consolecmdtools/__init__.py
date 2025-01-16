@@ -8,6 +8,7 @@ import json
 import io
 import pathlib
 import typing
+import shutil
 # !! some imports are lazy-loaded
 
 import consoleiotools as cit
@@ -15,7 +16,7 @@ import consoleiotools as cit
 from .path import Path
 
 
-__version__ = '6.6.2'
+__version__ = '6.6.3'
 
 
 def banner(text: str) -> str:
@@ -169,18 +170,22 @@ def read_cmd(cmd: str, verbose: bool = True) -> str:
 
 
 def is_cmd_exist(cmd: str) -> bool:
-    """Test if command is available for execution
+    """Test if command is available for execution.
 
     Args:
         cmd (str): The command.
+
     Returns:
         bool: if the command is exist
     """
+    base_cmd = cmd.split()[0].strip()
+    if shutil.which(base_cmd) is not None:  # Command is a executable under PATH
+        return True
     if platform.system() == "Windows":  # Windows
-        result = os.system(f"where {cmd} >nul 2>&1")
+        result = os.system(f"where {base_cmd} >nul 2>&1")
         return (result == 0)
     else:  # Linux, Unix, macOS
-        proc = os.popen(f"command -v '{cmd}'")
+        proc = os.popen(f"command -v '{base_cmd}'")  # only bash functions support
         result = proc.read()
         proc.close()
         return (result != "")
@@ -556,7 +561,6 @@ def move_file(src: str, dst: str, copy: bool = False, backup: bool = False, ensu
         str: The destination file path.
     """
     import time
-    import shutil
 
     def _msg(message):
         if msgout:
@@ -593,7 +597,6 @@ def move_file(src: str, dst: str, copy: bool = False, backup: bool = False, ensu
     else:
         _msg(f"File {src} moved to {dst}.")
         return shutil.move(src, dst)
-
 
 
 def ajax(url: str, param: dict = {}, method: str = "get"):
