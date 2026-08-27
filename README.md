@@ -141,6 +141,9 @@ True
 >>> cct.get_path("./file.txt").is_dir  # Test if the path is a dir.
 False
 
+>>> cct.get_path("./file.txt").join("subfolder")  # Join the path.
+Path('/path/to/subfolder')
+
 >>> cct.get_path("/path/to/file.txt").basename  # Get the basename of the file or dir.
 'file.txt'
 
@@ -151,7 +154,7 @@ False
 'file'
 
 >>> cct.get_path("/path/to/file.txt").parent  # Get the parent dir path of the file or dir.
-'/path/to'
+Path('/path/to')
 
 >>> cct.get_path("/path/to/file.txt").parent.basename  # Get the parent dir path's basename of the file or dir.
 'to'

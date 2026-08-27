@@ -89,3 +89,7 @@ class Path(str):
     def is_file(self) -> bool:
         """Returns whether the path is a file."""
         return os.path.isfile(self.abs)
+
+    def join(self, path: str) -> 'Path':
+        """Joins the path with another path and returns a new Path object."""
+        return Path(os.path.join(self.abs, path))

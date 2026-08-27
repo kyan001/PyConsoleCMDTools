@@ -6,10 +6,18 @@ import unittest
 import tempfile
 from unittest.mock import patch
 
+import re
+
 import FakeOut
 import FakeIn
 import FakeOs
 import FakeErr
+
+
+def strip_ansi(text):
+    """Remove ANSI escape codes from text."""
+    ansi_escape = re.compile(r'\x1b\[[0-9;]*m')
+    return ansi_escape.sub('', text)
 
 test_dir = os.path.dirname(os.path.abspath(__file__))
 project_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -243,6 +251,11 @@ class test_consolecmdtools(unittest.TestCase):
         self.assertTrue(path.is_file)
         self.assertFalse(path.parent.is_file)
 
+    def test_get_path_join(self):
+        path = cct.get_path(__file__).parent
+        joined_path = path.join("testfile")
+        self.assertEqual(joined_path.abs, os.path.join(os.path.dirname(__file__), "testfile"))
+
     def test_diff_same(self):
         diffs = cct.diff("test", "test")
         self.assertFalse(diffs)
@@ -448,7 +461,8 @@ class test_consolecmdtools(unittest.TestCase):
     def test_get_files(self):  # deprecated
         root = "tests"
         result = cct.get_files(root)
-        self.assertIn("DeprecationWarning: Function `get_files` is deprecated, now calling `get_paths` instead.", self.fakeerr.readline())
+        err_output = strip_ansi(self.fakeerr.readline())
+        self.assertIn("DeprecationWarning: Function `get_files` is deprecated, now calling `get_paths` instead.", err_output.replace("\n", ""))
         self.assertIn(os.path.join(root, "test_consolecmdtools.py"), result)
 
     def test_get_paths(self):

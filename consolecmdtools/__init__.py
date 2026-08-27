@@ -16,7 +16,7 @@ import consoleiotools as cit
 from .path import Path
 
 
-__version__ = '6.6.3'
+__version__ = '6.7.0'
 
 
 def banner(text: str) -> str:
