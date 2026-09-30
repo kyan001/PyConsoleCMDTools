@@ -1,5 +1,7 @@
 # Change Log
 ## Updates
+* 2026-09-30 v6.8.0:
+    * Feature: Support `bun` as package manager.
 * 2026-08-27 v6.7.0:
     * Feature: Add `Path.join(...)` to join the path.
 * 2025-01-17 v6.6.3:

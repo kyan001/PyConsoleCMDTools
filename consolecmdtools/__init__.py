@@ -16,7 +16,7 @@ import consoleiotools as cit
 from .path import Path
 
 
-__version__ = '6.7.0'
+__version__ = '6.8.1'
 
 
 def banner(text: str) -> str:
@@ -268,6 +268,10 @@ def install_package(name: str | dict, manager: str | dict = {"Windows": "scoop",
         "npm": {  # npm (Node.js)
             "command": "npm",
             "commandline": "npm install -g {}",
+        },
+        "bun": {  # bun
+            "command": "bun",
+            "commandline": "bun install -g {}",
         },
     }
     if manager_name:
